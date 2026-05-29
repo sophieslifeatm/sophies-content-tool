@@ -6,272 +6,792 @@ const DEFAULT_DATA = {
   followerGoal: 10000,
   likesTotal: "525.5K",
   views7d: "1.09M",
-  views28d: "1.3M",
   views60d: "1.7M+",
-  profileViews7d: "13,065",
-  profileViews28d: "21K",
-  profileViews60d: "32K",
-  likes7d: "194,864",
-  comments7d: "941",
-  shares7d: "16,052",
-  likes60d: "234K",
-  comments60d: "4,685",
-  shares60d: "17K",
   netFollowers7d: 693,
-  engagementRate: "13.1%",
-  femaleAudience: "75%",
-  maleAudience: "23%",
-  otherAudience: "2%",
-  bestPostTimes: "4 PM, 6 PM, 9 PM",
-  shopmyEarned2026: "$1,681",
   shopmyLifetime: "$1,681",
   shopmyPending: "$1,148",
   shopmyUpcoming: "$250",
   shopmyPaid: "$284",
-  shopmyClicksToday: 362,
   trustedShoppers: 404,
   shopmyTier: "Icon 89",
-  juneShopMyGoal: "$1,000",
-  juneGiftingGoal: 25,
-  juneGiftingCurrent: 10,
-  juneGiftingNeeded: 15,
-  junePaidCollabGoal: 4,
-  junePaidCollabCurrent: 0,
-  junePaidCollabRevenueGoal: "$1,000+",
-  warmLeads: "Glossier, Josie Maran",
-  activeInsight: "Fashion gets views + ShopMy revenue. Creator/PR tips convert followers. Lifestyle builds trust. Brand outreach is converting quickly with 10 confirmed gifting partnerships and 2 warm leads."
+  giftingPartners: 10,
+  giftingGoal: 25,
+  warmLeads: 4,
+  paidCollabs: 0,
+  paidCollabGoal: 4,
+  currentFocus: "Keep posting fashion reach content, mix in PR tips for follower growth, and use lifestyle videos to build trust.",
 };
 
-const START_BRANDS = [
-  ["Divi", "Gifting"], ["Salt & Stone", "Gifting"], ["Saltair", "Gifting"], ["Prequel", "Gifting"], ["Sacheu Beauty", "Gifting"],
-  ["Merit Beauty", "Gifting"], ["Cyklar", "Gifting"], ["Grey Bandit", "Gifting"], ["Sincerely Yours", "Gifting"], ["L'Occitane", "Gifting"],
-  ["Glossier", "Warm Lead"], ["Josie Maran", "Warm Lead"], ["Naturium", "PR List"], ["Paula's Choice", "Not Now"],
-  ["Target", "Sent"], ["Aveda", "Sent"], ["BaubleBar", "Sent"], ["Rare Beauty", "Sent"], ["Gap", "Sent"], ["Aritzia", "Sent"],
-  ["Summer Fridays", "Sent"], ["Kosas", "Sent"], ["Tower 28", "Sent"], ["Crown Affair", "Sent"], ["Dibs Beauty", "Sent"], ["Shark Ninja", "Sent"],
-  ["Charlotte Tilbury", "Sent"], ["Free People", "Sent"], ["American Eagle", "Sent"], ["Aerie", "Sent"], ["Hollister", "Sent"], ["Garage", "Sent"]
-].map(([name, status]) => ({ name, status }));
-
-const WINNERS = [
-  { title: "Target Matching Set Haul", metric: "1.06M views · 601 followers", tag: "viral haul", note: "Your strongest format: affordable fashion, simple try-on, clear follow CTA, and high ShopMy conversion." },
-  { title: "Morning of Self-Care", metric: "502.7K views", tag: "lifestyle reach", note: "Aesthetic lifestyle works for awareness and trust-building between hauls." },
-  { title: "Haircut / Brunette Bob", metric: "426.6K views", tag: "transformation", note: "Transformation and aesthetic decision content can reach outside your core audience." },
-  { title: "Princess Polly Spring Finds", metric: "152.3K views", tag: "brand proof", note: "Partner content works when it feels organic and try-on based." },
-  { title: "Amazon / SUUKSESS Spring Top Haul", metric: "121.9K views", tag: "affordable fashion", note: "Affordable Amazon fashion and Skims-dupe framing is a repeatable winner." },
-  { title: "PR Haul Tips", metric: "24.2K views · 454 followers", tag: "follower converter", note: "Lower views, but extremely strong follower conversion. Keep using this as a growth pillar." }
+const DEFAULT_TASKS = [
+  { text: "Post Marshalls summer haul", done: false },
+  { text: "Post PR haul / what came this week", done: false },
+  { text: "Follow up with warm brand leads", done: false },
+  { text: "Add new ShopMy links after every haul", done: false },
+  { text: "Film one creator tips video", done: false },
 ];
 
-const CONTENT_BOARD = [
-  { title: "Film next", items: ["Target/Wild Fable summer haul", "PR haul: what came this week", "Marshalls summer haul"] },
-  { title: "Post style", items: ["Fast try-on", "Simple text overlay", "Natural caption + ShopMy mention"] },
-  { title: "Best CTAs", items: ["follow for more hauls like this", "linked in my ShopMy", "which one would you wear?"] }
+const DEFAULT_CONTENT = [
+  { title: "Target Matching Set Haul", metric: "1.06M views", note: "+601 followers · strongest ShopMy conversion" },
+  { title: "Morning of Self-Care", metric: "502.7K views", note: "Lifestyle reach · builds trust" },
+  { title: "Haircut / Brunette Bob", metric: "426.6K views", note: "Transformation content reaches beyond core followers" },
+  { title: "Princess Polly Spring Finds", metric: "152.3K views", note: "Brand proof · organic try-on style works" },
+  { title: "Amazon / SUUKSESS Spring Top Haul", metric: "121.9K views", note: "Affordable fashion + dupe framing is repeatable" },
+  { title: "PR Haul Tips", metric: "24.2K views", note: "+454 followers · lower views but high follower conversion" },
 ];
 
-const DREAM_BRANDS = ["Victoria Beckham Beauty", "Kosas", "Summer Fridays", "Crown Affair", "Rhode", "Tower 28", "Glossier", "Rare Beauty"];
-
-const PLAN = [
-  ["Completed", "Gap Matching Set Haul", "Posted May 29 · quick no-talking try-on", "test if music-only try-on beats talking version", "✅"],
-  ["Haul", "Target Finds of the Week: Wild Fable summer haul", "Link every Target item + pin Target collection", "follow for more Target finds 🤍", "🛍️"],
-  ["Tips", "How I got PR with under 10K followers", "Creator audience, no links needed", "follow for more microinfluencer tips ✨", "💌"],
-  ["Haul", "Amazon summer tops under $30", "Amazon storefront + ShopMy collection", "follow for more affordable finds 🛍️", "🛒"],
-  ["PR", "PR haul: what brands sent me this week", "Merit, Cyklar, Grey Bandit, L'Occitane, Sincerely Yours", "which package would you open first?", "📦"],
-  ["Lifestyle", "Morning room reset + product mentions", "Room decor, fragrance, body care links", "follow for more room inspo ☁️", "☁️"],
-  ["Haul", "Marshalls summer haul", "Link similar finds and affordable alternatives", "follow for more summer finds", "🌷"],
-  ["Beauty", "Everyday beauty routine with recent PR", "Link the exact products used", "follow for more honest beauty reviews", "🫧"],
-  ["Tips", "What I send brands for gifting", "No links needed", "follow for part 2", "✍️"],
-  ["ShopMy", "How I organize my ShopMy for followers", "Mention collections + best sellers", "follow for creator tips", "🔗"],
-  ["Haul", "Aritzia-inspired summer outfits", "Link Aritzia and affordable dupes", "follow for more outfit inspo", "👚"],
-  ["Lifestyle", "Spend the morning with me: pool, errands, reset", "OOTD + wellness products", "follow for daily life", "🍵"],
-  ["Tips", "How one viral video changed my ShopMy", "Use Target sales as proof", "follow for more behind the scenes", "📈"],
-  ["Haul", "Top 10 ShopMy picks right now", "Feature best converters", "shop my links in bio", "⭐"]
-];
-
-const STATUS = {
-  Gifting: { emoji: "🎁", bg: "#e4f3df", color: "#466d3d" },
-  "Warm Lead": { emoji: "✨", bg: "#fff0c9", color: "#8a5b00" },
-  "PR List": { emoji: "📋", bg: "#eae3f5", color: "#65548a" },
-  Paid: { emoji: "💸", bg: "#f7dde5", color: "#8d3b56" },
-  Sent: { emoji: "✉️", bg: "#f8edf0", color: "#9b6878" },
-  "Not Now": { emoji: "⏸️", bg: "#eeeeee", color: "#6f6f6f" },
+const DEFAULT_BRANDS = {
+  warm: ["Glossier", "Josie Maran", "Kosas", "Summer Fridays"],
+  followUp: ["Victoria Beckham Beauty", "Crown Affair", "Tower 28", "Rare Beauty"],
+  confirmed: ["Divi", "Salt & Stone", "Saltair", "Prequel", "Sacheu", "Merit Beauty", "Grey Bandit", "Cyklar", "L'Occitane", "Sincerely Yours"],
 };
 
-const TABS = ["Dashboard", "Ideas", "Captions", "ShopMy", "Plan", "Brands", "Update"];
-const STORAGE_DATA = "sophieCreatorDataV5";
-const STORAGE_BRANDS = "sophieBrandsV5";
+const STORAGE_KEY = "sophie_creator_studio_simple_v1";
 
-function readData() {
-  try {
-    const saved = localStorage.getItem(STORAGE_DATA);
-    return saved ? { ...DEFAULT_DATA, ...JSON.parse(saved) } : DEFAULT_DATA;
-  } catch {
-    return DEFAULT_DATA;
-  }
+function safeNumber(value, fallback = 0) {
+  const n = Number(String(value).replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(n) ? n : fallback;
 }
 
-function Progress({ value, max, label, detail }) {
-  const pct = Math.min(100, Math.round((value / max) * 100));
+function percent(current, goal) {
+  const c = safeNumber(current);
+  const g = safeNumber(goal, 1);
+  return Math.max(0, Math.min(100, Math.round((c / g) * 100)));
+}
+
+function Progress({ label, value, detail }) {
   return (
-    <div className="progress-card">
-      <div className="progress-top"><span>{label}</span><strong>{detail || `${value}/${max}`}</strong></div>
-      <div className="bar"><div style={{ width: `${pct}%` }} /></div>
+    <div className="progressRow">
+      <div className="progressTop">
+        <span>{label}</span>
+        <b>{detail}</b>
+      </div>
+      <div className="bar">
+        <div style={{ width: `${value}%` }} />
+      </div>
     </div>
   );
 }
 
-export default function App() {
-  const [tab, setTab] = useState("Dashboard");
-  const [data, setData] = useState(readData());
-  const [draft, setDraft] = useState(JSON.stringify(readData(), null, 2));
-  const [brands, setBrands] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_BRANDS)) || START_BRANDS; } catch { return START_BRANDS; }
-  });
-  const [brandFilter, setBrandFilter] = useState("All");
-  const [brandSearch, setBrandSearch] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [result, setResult] = useState("");
+function Field({ label, name, value, onChange, type = "text" }) {
+  return (
+    <label className="field">
+      <span>{label}</span>
+      <input
+        type={type}
+        value={value ?? ""}
+        onChange={(e) => onChange(name, type === "number" ? safeNumber(e.target.value) : e.target.value)}
+      />
+    </label>
+  );
+}
 
-  useEffect(() => localStorage.setItem(STORAGE_BRANDS, JSON.stringify(brands)), [brands]);
-  const remaining = Math.max(0, data.followerGoal - Number(data.followers || 0));
-  const giftingCurrent = brands.filter(b => b.status === "Gifting").length || Number(data.juneGiftingCurrent || 10);
-  const warmLeadCount = brands.filter(b => b.status === "Warm Lead").length || 2;
-  const paidCurrent = Number(data.junePaidCollabCurrent || 0);
+function ListEditor({ title, items, onChange, placeholder }) {
+  const update = (index, value) => {
+    const next = [...items];
+    next[index] = value;
+    onChange(next);
+  };
 
-  const filteredBrands = useMemo(() => brands.filter(b => {
-    const byFilter = brandFilter === "All" || b.status === brandFilter;
-    const bySearch = b.name.toLowerCase().includes(brandSearch.toLowerCase());
-    return byFilter && bySearch;
-  }), [brands, brandFilter, brandSearch]);
-
-  function saveData() {
-    try {
-      const parsed = JSON.parse(draft);
-      localStorage.setItem(STORAGE_DATA, JSON.stringify(parsed));
-      setData({ ...DEFAULT_DATA, ...parsed });
-      alert("Saved!");
-    } catch {
-      alert("Something is wrong with the JSON. Check commas and quotes.");
-    }
-  }
-
-  function quickGenerate(kind) {
-    const text = prompt.toLowerCase();
-    if (kind === "ideas") {
-      setResult(`1. ${text || "Target haul part 2"}\nHook: follow for haul videos like these 🤍\nWhy it works: It repeats your 1M+ affordable fashion format and gives people a clear reason to follow.\nShopMy angle: Pin the collection and say everything is linked in bio.\n\n2. PR haul: brands that said yes this week\nHook: I got 10 gifting yeses with under 10K followers\nWhy it works: Your PR tip videos convert followers really well.\n\n3. Spend the morning with me + PR products\nHook: slow morning reset after a chaotic week ☁️\nWhy it works: Lifestyle builds trust and gives brands a natural integration.\n\n4. Top 5 things followers bought from my ShopMy\nHook: these are the exact pieces my followers keep buying\nWhy it works: Social proof + shopping intent.\n\n5. Affordable summer outfits under $40\nHook: outfits that look more expensive than they are\nWhy it works: Affordable fashion is your strongest reach category.`);
-    } else if (kind === "caption") {
-      setResult(`Option 1\nso obsessed with these finds 🤍 everything is linked in my ShopMy in bio!! follow for more hauls like this 🫶\n#tryonhaul #summeroutfits #affordablefashion #shopmy #haul\n\nOption 2\nquick little haul because these were too cute not to share ☁️ linked everything in my ShopMy in bio!! follow for more affordable finds 🤍\n#fashionhaul #tryonhaul #summerfashion #outfitinspo`);
-    } else {
-      setResult(`Best move: put your strongest converters first.\n\n1. Pin a Target/Wild Fable collection at the top of ShopMy.\n2. Make a “things from my viral videos” collection.\n3. In captions, use: “linked everything in my ShopMy in bio 🔗”\n4. After every haul, add a comment saying: “links are under my ShopMy in bio 🤍”\n5. Keep affordable fashion first because it is driving the most orders and clicks.`);
-    }
-  }
+  const remove = (index) => onChange(items.filter((_, i) => i !== index));
 
   return (
-    <div className="page">
+    <div className="editorCard">
+      <h3>{title}</h3>
+      {items.map((item, index) => (
+        <div className="listEdit" key={`${title}-${index}`}>
+          <input value={item} onChange={(e) => update(index, e.target.value)} />
+          <button onClick={() => remove(index)}>×</button>
+        </div>
+      ))}
+      <button className="softBtn" onClick={() => onChange([...items, placeholder])}>+ Add</button>
+    </div>
+  );
+}
+
+function App() {
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [data, setData] = useState(DEFAULT_DATA);
+  const [tasks, setTasks] = useState(DEFAULT_TASKS);
+  const [content, setContent] = useState(DEFAULT_CONTENT);
+  const [brands, setBrands] = useState(DEFAULT_BRANDS);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.data) setData({ ...DEFAULT_DATA, ...parsed.data });
+        if (parsed.tasks) setTasks(parsed.tasks);
+        if (parsed.content) setContent(parsed.content);
+        if (parsed.brands) setBrands({ ...DEFAULT_BRANDS, ...parsed.brands });
+      }
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, []);
+
+  const saveAll = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, tasks, content, brands }));
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1800);
+  };
+
+  const resetAll = () => {
+    if (!window.confirm("Reset everything back to the original version?")) return;
+    setData(DEFAULT_DATA);
+    setTasks(DEFAULT_TASKS);
+    setContent(DEFAULT_CONTENT);
+    setBrands(DEFAULT_BRANDS);
+    localStorage.removeItem(STORAGE_KEY);
+  };
+
+  const followersLeft = Math.max(0, safeNumber(data.followerGoal) - safeNumber(data.followers));
+  const followerPct = percent(data.followers, data.followerGoal);
+  const giftingPct = percent(data.giftingPartners, data.giftingGoal);
+  const paidPct = percent(data.paidCollabs, data.paidCollabGoal);
+
+  const stats = useMemo(() => [
+    { label: "Followers", value: data.followers.toLocaleString?.() ?? data.followers },
+    { label: "To 10K", value: followersLeft.toLocaleString() },
+    { label: "Views 60D", value: data.views60d },
+    { label: "ShopMy", value: data.shopmyLifetime },
+  ], [data, followersLeft]);
+
+  const updateData = (name, value) => setData((prev) => ({ ...prev, [name]: value }));
+
+  const toggleTask = (index) => {
+    setTasks(tasks.map((task, i) => i === index ? { ...task, done: !task.done } : task));
+  };
+
+  const updateTaskText = (index, text) => {
+    setTasks(tasks.map((task, i) => i === index ? { ...task, text } : task));
+  };
+
+  const removeTask = (index) => setTasks(tasks.filter((_, i) => i !== index));
+
+  const addTask = () => setTasks([...tasks, { text: "New task", done: false }]);
+
+  const updateContent = (index, key, value) => {
+    setContent(content.map((item, i) => i === index ? { ...item, [key]: value } : item));
+  };
+
+  const addContent = () => setContent([...content, { title: "New content", metric: "0 views", note: "Add notes here" }]);
+
+  const removeContent = (index) => setContent(content.filter((_, i) => i !== index));
+
+  return (
+    <div className="app">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap');
-        :root{--ink:#2f2324;--brown:#5a3f3b;--rose:#c990a3;--rose2:#f7e4ea;--blush:#fff5f7;--cream:#fffaf2;--sage:#dfead9;--blue:#e8edf7;--line:#edd6dc;--muted:#897477;}
-        *{box-sizing:border-box} body{margin:0}.page{min-height:100vh;background:linear-gradient(135deg,#fffaf2 0%,#fff5f7 47%,#f8f3ff 100%);color:var(--ink);font-family:Inter,system-ui,sans-serif}.hero{padding:18px 18px 34px;background:var(--cream);border-bottom:1px solid var(--line)}.moodboard{max-width:1180px;margin:0 auto 22px;display:grid;grid-template-columns:1.4fr .9fr .9fr 1.1fr 1fr;gap:10px;height:126px}.tile{border-radius:22px;background-size:cover;background-position:center;box-shadow:0 12px 34px rgba(137,83,99,.12);border:1px solid rgba(255,255,255,.8);position:relative;overflow:hidden}.tile:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(68,38,43,.18))}.tile span{position:absolute;left:14px;bottom:12px;color:white;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.25);z-index:1}.tile.one{background:linear-gradient(135deg,#f4cbd8,#fff0d6)}.tile.two{background:linear-gradient(135deg,#e5eadb,#fff4f6)}.tile.three{background:linear-gradient(135deg,#f7dde4,#fff9f1)}.tile.four{background:linear-gradient(135deg,#f0d2df,#e8edf7)}.tile.five{background:linear-gradient(135deg,#f8eac9,#f7dce6)}.hero-inner{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:end}.eyebrow{letter-spacing:7px;color:#a77c85;font-size:12px;text-transform:lowercase}.title{font-family:'DM Serif Display',serif;color:#332224;font-size:62px;line-height:.92;margin:8px 0 12px}.subtitle{color:var(--muted);font-size:16px}.hero-card{background:rgba(255,255,255,.74);border:1px solid var(--line);border-radius:30px;padding:20px;box-shadow:0 22px 70px rgba(126,69,86,.11);backdrop-filter:blur(16px)}.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{background:linear-gradient(135deg,#fff,#fff7fa);border:1px solid #f2d8df;border-radius:22px;padding:18px;text-align:center}.stat strong{font-family:'DM Serif Display';display:block;color:#8d3b56;font-size:32px;line-height:1}.stat span{color:#9f7f88;text-transform:uppercase;font-size:11px;letter-spacing:1.4px;font-weight:800}.tabs{position:sticky;top:0;z-index:5;background:rgba(255,250,246,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;gap:10px;overflow:auto}.tabs button{border:1px solid transparent;background:transparent;color:#8f7078;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;white-space:nowrap}.tabs button.active{background:white;border-color:#edc8d3;color:#9b3154;box-shadow:0 8px 24px rgba(127,37,70,.08)}.wrap{max-width:1180px;margin:0 auto;padding:34px 20px 80px}.grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:22px}.grid-three{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:rgba(255,255,255,.76);border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:0 18px 55px rgba(127,37,70,.07);backdrop-filter:blur(12px);margin-bottom:20px}.card h2,.card h3,.section-title{font-family:'DM Serif Display',serif;font-size:34px;margin:0 0 14px;color:#8d3b56}.tiny-label{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:#aa8990;font-weight:900}.metric{border-radius:24px;padding:22px;background:#fff}.metric.pink{background:linear-gradient(135deg,#f9e4ee,#fff7fa)}.metric.blue{background:linear-gradient(135deg,#e9eefc,#f7f9ff)}.metric.sage{background:linear-gradient(135deg,#e3f1df,#f9fff7)}.metric.cream{background:linear-gradient(135deg,#fff1cb,#fffaf0)}.metric strong{font-family:'DM Serif Display';font-size:38px;color:#8d3b56;display:block}.metric span{text-transform:uppercase;font-weight:800;font-size:12px}.progress-card{margin:14px 0}.progress-top{display:flex;justify-content:space-between;font-weight:800;margin-bottom:7px}.bar{height:13px;background:#f4dfe5;border-radius:999px;overflow:hidden}.bar div{height:100%;background:linear-gradient(90deg,#b7798c,#e7aebe);border-radius:999px}.pill-row{display:flex;flex-wrap:wrap;gap:9px}.pill{border:1px solid #edc5d0;border-radius:999px;padding:9px 14px;background:white;color:#9b3154;font-weight:700}.winner{display:grid;grid-template-columns:92px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid #f3d8e2}.winner:last-child{border-bottom:0}.thumb{height:92px;border-radius:20px;background:linear-gradient(135deg,#f3d7df,#fdf3e5);display:grid;place-items:center;font-size:28px}.winner b{font-size:18px}.winner em{display:block;color:#a63c5e;font-style:normal;font-weight:800;margin:4px 0}.idea-card{background:#fff;border:1px solid #f1d4de;border-radius:24px;padding:22px;margin-bottom:16px}.idea-card small{color:#9b3154;text-transform:uppercase;font-weight:800}.textarea{width:100%;min-height:150px;border:1px solid #edc5d0;background:rgba(255,255,255,.75);border-radius:24px;padding:20px;font-size:16px;font-family:Inter;outline:none}.btn{width:100%;border:0;background:linear-gradient(135deg,#b7798c,#8d3b56);color:white;border-radius:999px;padding:16px 22px;font-size:16px;font-weight:800;margin:14px 0;cursor:pointer;box-shadow:0 12px 30px rgba(127,37,70,.16)}.result{white-space:pre-wrap;font-size:16px;line-height:1.65}.brand-row{display:flex;align-items:center;justify-content:space-between;background:white;border:1px solid #f1d4de;border-radius:22px;padding:16px 18px;margin:10px 0}.badge{border-radius:999px;padding:8px 12px;font-weight:800}.brand-controls{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}.brand-controls input{border:1px solid #edc5d0;border-radius:18px;padding:14px 16px;font-size:16px}.json{font-family:ui-monospace,monospace;min-height:480px;font-size:14px;line-height:1.45}.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.plan-card{background:white;border:1px solid #f1d4de;border-radius:25px;padding:22px}.plan-card.done{background:linear-gradient(135deg,#fff8fb,#eef7ea);border-color:#d9ead3}.plan-type{display:inline-block;color:#9b3154;font-weight:900;margin-bottom:8px}.soft{background:#fff8fb;border:1px solid #f1d4de;border-radius:24px;padding:20px}.soft b{color:#9b3154}.muted{color:var(--muted);line-height:1.6}.dream-board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.dream{border-radius:22px;border:1px solid #f1d4de;background:linear-gradient(135deg,#fff,#fff1f5);padding:20px;min-height:100px;display:flex;align-items:end;font-weight:800;color:#7b4d59}@media(max-width:900px){.hero-inner,.grid,.grid-three,.plan-grid{grid-template-columns:1fr}.moodboard{grid-template-columns:1fr 1fr 1fr;height:180px}.title{font-size:42px}.wrap{padding:22px 14px}.card{padding:20px;border-radius:24px}.stat strong{font-size:26px}.metric strong{font-size:30px}.tabs{padding:8px 10px}.tabs button{padding:9px 12px}.dream-board{grid-template-columns:1fr 1fr}.winner{grid-template-columns:70px 1fr}.thumb{height:70px}}
+        :root {
+          --cream: #fbf7f2;
+          --card: rgba(255,255,255,.86);
+          --text: #39262b;
+          --muted: #8b7378;
+          --rose: #a04362;
+          --rose2: #c88aa0;
+          --border: #efd1da;
+          --shadow: 0 18px 60px rgba(93, 56, 68, .10);
+        }
+        * { box-sizing: border-box; }
+        body {
+          margin: 0;
+          font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          background:
+            radial-gradient(circle at 15% 5%, rgba(246, 214, 222, .55), transparent 28%),
+            radial-gradient(circle at 90% 12%, rgba(238, 225, 215, .75), transparent 35%),
+            linear-gradient(180deg, var(--cream), #fff8fb 58%, #fbf7f2);
+          color: var(--text);
+        }
+        h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; margin: 0; color: var(--text); }
+        p { color: var(--muted); line-height: 1.5; }
+        button, input, textarea { font: inherit; }
+        button { cursor: pointer; border: 0; }
+
+        .hero {
+          max-width: 1120px;
+          margin: 0 auto;
+          padding: 64px 24px 44px;
+          display: grid;
+          grid-template-columns: 1.15fr .85fr;
+          gap: 36px;
+          align-items: end;
+        }
+        .handle {
+          color: var(--rose);
+          letter-spacing: .42em;
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 14px;
+        }
+        .hero h1 {
+          font-size: clamp(44px, 7vw, 78px);
+          line-height: .92;
+          letter-spacing: -0.05em;
+        }
+        .hero p {
+          max-width: 680px;
+          font-size: 18px;
+          margin: 18px 0 0;
+        }
+        .heroStats {
+          background: rgba(255,255,255,.68);
+          border: 1px solid var(--border);
+          border-radius: 28px;
+          padding: 20px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          box-shadow: var(--shadow);
+        }
+        .stat {
+          border: 1px solid var(--border);
+          border-radius: 22px;
+          padding: 22px 14px;
+          text-align: center;
+          background: linear-gradient(180deg, #fff, #fff7fa);
+        }
+        .stat b {
+          display: block;
+          font-family: Georgia, "Times New Roman", serif;
+          color: var(--rose);
+          font-size: 32px;
+          line-height: 1;
+        }
+        .stat span {
+          display: block;
+          margin-top: 7px;
+          font-size: 11px;
+          letter-spacing: .12em;
+          text-transform: uppercase;
+          color: var(--muted);
+          font-weight: 800;
+        }
+
+        .tabs {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background: rgba(251,247,242,.9);
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+          padding: 10px 16px;
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+        }
+        .tab {
+          color: var(--muted);
+          background: transparent;
+          padding: 12px 16px;
+          border-radius: 999px;
+          font-weight: 800;
+          white-space: nowrap;
+        }
+        .tab.active {
+          background: #fff;
+          color: var(--rose);
+          box-shadow: 0 0 0 1px var(--border) inset;
+        }
+
+        .page {
+          max-width: 1060px;
+          margin: 0 auto;
+          padding: 34px 24px 72px;
+        }
+        .grid2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 22px;
+        }
+        .card {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 28px;
+          padding: 28px;
+          box-shadow: var(--shadow);
+        }
+        .card h2 {
+          font-size: 36px;
+          letter-spacing: -0.04em;
+        }
+        .eyebrow {
+          color: var(--rose2);
+          font-weight: 900;
+          letter-spacing: .18em;
+          text-transform: uppercase;
+          font-size: 12px;
+          margin-bottom: 8px;
+        }
+        .miniStats {
+          margin-top: 20px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .mini {
+          background: linear-gradient(180deg, #fff6f9, #fff);
+          border: 1px solid var(--border);
+          border-radius: 22px;
+          padding: 22px;
+        }
+        .mini b {
+          display: block;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 34px;
+          color: var(--rose);
+        }
+        .mini span {
+          display: block;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: .1em;
+          color: var(--muted);
+          font-weight: 850;
+        }
+
+        .progressRow { margin-top: 18px; }
+        .progressTop {
+          display: flex;
+          justify-content: space-between;
+          gap: 16px;
+          font-weight: 850;
+          margin-bottom: 9px;
+        }
+        .bar {
+          height: 12px;
+          border-radius: 999px;
+          background: #f3dfe5;
+          overflow: hidden;
+        }
+        .bar div {
+          height: 100%;
+          border-radius: inherit;
+          background: linear-gradient(90deg, var(--rose2), var(--rose));
+        }
+
+        .wide { grid-column: 1 / -1; }
+        .taskRow, .contentRow, .brandPill {
+          background: rgba(255,255,255,.75);
+          border: 1px solid var(--border);
+          border-radius: 18px;
+          padding: 14px 16px;
+        }
+        .taskRow {
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          gap: 12px;
+          align-items: center;
+          margin-top: 10px;
+        }
+        .taskRow input[type="checkbox"] {
+          accent-color: var(--rose);
+          width: 18px;
+          height: 18px;
+        }
+        .taskRow input[type="text"] {
+          border: 0;
+          background: transparent;
+          color: var(--text);
+          width: 100%;
+          outline: 0;
+          font-weight: 700;
+        }
+        .taskRow.done input[type="text"] {
+          text-decoration: line-through;
+          color: var(--muted);
+        }
+        .xBtn {
+          background: #fff;
+          color: var(--muted);
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          width: 26px;
+          height: 26px;
+        }
+        .primaryBtn, .softBtn {
+          margin-top: 14px;
+          border-radius: 999px;
+          padding: 12px 18px;
+          font-weight: 850;
+        }
+        .primaryBtn {
+          background: var(--rose);
+          color: white;
+          box-shadow: 0 12px 24px rgba(160, 67, 98, .18);
+        }
+        .softBtn {
+          background: #fff;
+          color: var(--rose);
+          border: 1px solid var(--border);
+        }
+
+        .contentRow {
+          margin-top: 10px;
+          display: grid;
+          grid-template-columns: 1.2fr .7fr;
+          gap: 10px 18px;
+          align-items: start;
+        }
+        .contentRow .metric { color: var(--rose); font-weight: 850; }
+        .contentRow .note {
+          grid-column: 1 / -1;
+          color: var(--muted);
+          font-size: 14px;
+        }
+
+        .brandColumns {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+        }
+        .brandBox h3 {
+          font-size: 24px;
+          margin-bottom: 12px;
+        }
+        .brandPill {
+          margin-top: 8px;
+          font-weight: 750;
+        }
+
+        .shopGrid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 14px;
+        }
+        .shopItem {
+          padding: 18px;
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          background: #fff;
+        }
+        .shopItem span { display: block; color: var(--muted); font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; }
+        .shopItem b { display: block; color: var(--rose); font-family: Georgia, serif; font-size: 32px; margin-top: 8px; }
+
+        .formGrid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 14px;
+        }
+        .field span {
+          display: block;
+          font-weight: 850;
+          color: var(--muted);
+          margin-bottom: 7px;
+          font-size: 13px;
+        }
+        .field input, .field textarea {
+          width: 100%;
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          background: #fff;
+          padding: 13px 14px;
+          color: var(--text);
+          outline-color: var(--rose2);
+        }
+        .field textarea { min-height: 90px; resize: vertical; }
+        .formSection {
+          margin-top: 24px;
+        }
+        .formSection h3 {
+          font-size: 26px;
+          margin-bottom: 14px;
+        }
+        .saveBar {
+          margin-top: 24px;
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        .saved {
+          color: var(--rose);
+          font-weight: 850;
+        }
+        .editorCard {
+          background: rgba(255,255,255,.72);
+          border: 1px solid var(--border);
+          border-radius: 24px;
+          padding: 20px;
+        }
+        .editorCard h3 { font-size: 24px; }
+        .listEdit {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 10px;
+          margin-top: 10px;
+        }
+        .listEdit input {
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 12px;
+          outline-color: var(--rose2);
+        }
+        .listEdit button {
+          border-radius: 14px;
+          background: #fff;
+          border: 1px solid var(--border);
+          color: var(--muted);
+          width: 44px;
+        }
+        .contentEditorRow {
+          border: 1px solid var(--border);
+          background: rgba(255,255,255,.72);
+          border-radius: 22px;
+          padding: 16px;
+          margin-top: 12px;
+          display: grid;
+          gap: 10px;
+        }
+        .contentEditorRow input {
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 12px;
+          outline-color: var(--rose2);
+        }
+        .contentEditorRow .two {
+          display: grid;
+          grid-template-columns: 1fr 1fr auto;
+          gap: 10px;
+        }
+
+        @media (max-width: 860px) {
+          .hero, .grid2, .brandColumns, .formGrid { grid-template-columns: 1fr; }
+          .hero { padding-top: 42px; }
+          .heroStats, .miniStats, .shopGrid { grid-template-columns: 1fr 1fr; }
+          .page { padding-inline: 16px; }
+          .card { padding: 22px; }
+        }
+        @media (max-width: 540px) {
+          .heroStats, .miniStats, .shopGrid { grid-template-columns: 1fr; }
+          .hero h1 { font-size: 44px; }
+          .card h2 { font-size: 30px; }
+          .contentRow { grid-template-columns: 1fr; }
+        }
       `}</style>
 
       <header className="hero">
-        <div className="moodboard">
-          <div className="tile one"><span>room reset</span></div>
-          <div className="tile two"><span>PR days</span></div>
-          <div className="tile three"><span>try-ons</span></div>
-          <div className="tile four"><span>ShopMy</span></div>
-          <div className="tile five"><span>10K era</span></div>
+        <div>
+          <div className="handle">{data.handle}</div>
+          <h1>Sophie's Content Studio</h1>
+          <p>A simple creator dashboard for what to post next, what is working, ShopMy, brand outreach, and the 10K sprint.</p>
         </div>
-        <div className="hero-inner">
-          <div>
-            <div className="eyebrow">{data.handle.replace('@','@ ')}</div>
-            <h1 className="title">Sophie's Creator Studio</h1>
-            <p className="subtitle">Notion-style creator workspace with Pinterest touches for content, gifting, ShopMy, and 10K growth.</p>
-          </div>
-          <div className="hero-card">
-            <div className="stat-grid">
-              <div className="stat"><strong>{Number(data.followers).toLocaleString()}</strong><span>followers</span></div>
-              <div className="stat"><strong>{data.views60d}</strong><span>views 60d</span></div>
-              <div className="stat"><strong>{giftingCurrent}/25</strong><span>gifting</span></div>
-              <div className="stat"><strong>{data.shopmyLifetime}</strong><span>ShopMy</span></div>
+        <div className="heroStats">
+          {stats.map((stat) => (
+            <div className="stat" key={stat.label}>
+              <b>{stat.value}</b>
+              <span>{stat.label}</span>
             </div>
-          </div>
+          ))}
         </div>
       </header>
 
-      <nav className="tabs">{TABS.map(t => <button className={tab===t?'active':''} key={t} onClick={() => setTab(t)}>{t==='Dashboard'?'📌 ':t==='Ideas'?'💡 ':t==='Captions'?'✍️ ':t==='ShopMy'?'🛍️ ':t==='Plan'?'📅 ':t==='Brands'?'📊 ':'⚙️ '}{t}</button>)}</nav>
+      <nav className="tabs">
+        {[
+          ["dashboard", "📌 Dashboard"],
+          ["content", "🎥 Content"],
+          ["brands", "📊 Brands"],
+          ["shopmy", "🛍️ ShopMy"],
+          ["update", "⚙️ Update"],
+        ].map(([id, label]) => (
+          <button className={`tab ${activeTab === id ? "active" : ""}`} onClick={() => setActiveTab(id)} key={id}>
+            {label}
+          </button>
+        ))}
+      </nav>
 
-      <main className="wrap">
-        {tab === "Dashboard" && <>
-          <div className="grid">
+      {activeTab === "dashboard" && (
+        <main className="page">
+          <div className="grid2">
             <section className="card">
-              <span className="tiny-label">quick view</span>
-              <h2>Today’s Creator HQ</h2>
-              <div className="grid-three" style={{gridTemplateColumns:'1fr 1fr'}}>
-                <div className="metric pink"><strong>{remaining.toLocaleString()}</strong><span>followers to 10K</span></div>
-                <div className="metric sage"><strong>{giftingCurrent}/25</strong><span>gifting partners</span></div>
-                <div className="metric blue"><strong>{warmLeadCount}</strong><span>warm leads</span></div>
-                <div className="metric cream"><strong>{data.shopmyLifetime}</strong><span>ShopMy lifetime</span></div>
+              <div className="eyebrow">Quick View</div>
+              <h2>Today’s Focus</h2>
+              <div className="miniStats">
+                <div className="mini"><b>{followersLeft.toLocaleString()}</b><span>Followers to 10K</span></div>
+                <div className="mini"><b>{data.giftingPartners}/{data.giftingGoal}</b><span>Gifting partners</span></div>
+                <div className="mini"><b>{data.warmLeads}</b><span>Warm leads</span></div>
+                <div className="mini"><b>{data.shopmyLifetime}</b><span>ShopMy lifetime</span></div>
               </div>
             </section>
+
             <section className="card">
-              <span className="tiny-label">june goals</span>
-              <h2>Glow Up Tracker</h2>
-              <Progress value={Number(data.followers)} max={Number(data.followerGoal)} label="Followers" detail={`${Number(data.followers).toLocaleString()} / 10,000`} />
-              <Progress value={giftingCurrent} max={Number(data.juneGiftingGoal)} label="Gifting" detail={`${giftingCurrent} confirmed · ${Number(data.juneGiftingGoal)-giftingCurrent} left`} />
-              <Progress value={paidCurrent} max={Number(data.junePaidCollabGoal)} label="Paid collabs" detail={`${paidCurrent} / ${data.junePaidCollabGoal}`} />
+              <div className="eyebrow">June Goals</div>
+              <h2>Growth Tracker</h2>
+              <Progress label="Followers" value={followerPct} detail={`${safeNumber(data.followers).toLocaleString()} / ${safeNumber(data.followerGoal).toLocaleString()}`} />
+              <Progress label="Gifting" value={giftingPct} detail={`${data.giftingPartners} confirmed · ${Math.max(0, data.giftingGoal - data.giftingPartners)} left`} />
+              <Progress label="Paid collabs" value={paidPct} detail={`${data.paidCollabs} / ${data.paidCollabGoal}`} />
             </section>
-          </div>
 
-          <section className="card">
-            <span className="tiny-label">creator plan</span>
-            <h2>What to film next</h2>
-            <div className="grid-three">{CONTENT_BOARD.map(x => <div className="soft" key={x.title}><h3 style={{fontSize:25}}>{x.title}</h3>{x.items.map(i => <p className="muted" key={i}>♡ {i}</p>)}</div>)}</div>
-          </section>
+            <section className="card wide">
+              <div className="eyebrow">This Week</div>
+              <h2>What to do next</h2>
+              {tasks.map((task, index) => (
+                <div className={`taskRow ${task.done ? "done" : ""}`} key={index}>
+                  <input type="checkbox" checked={task.done} onChange={() => toggleTask(index)} />
+                  <input type="text" value={task.text} onChange={(e) => updateTaskText(index, e.target.value)} />
+                  <button className="xBtn" onClick={() => removeTask(index)}>×</button>
+                </div>
+              ))}
+              <button className="softBtn" onClick={addTask}>+ Add task</button>
+            </section>
 
-          <div className="grid">
             <section className="card">
-              <span className="tiny-label">brand momentum</span>
+              <div className="eyebrow">Brand Momentum</div>
               <h2>Warm Leads + PR</h2>
-              <p className="muted"><b>Warm leads:</b> Glossier and Josie Maran.</p>
-              <p className="muted"><b>Confirmed gifting:</b> Divi, Salt & Stone, Saltair, Prequel, Sacheu, Merit, Cyklar, Grey Bandit, Sincerely Yours, L'Occitane.</p>
-              <p className="muted"><b>Next move:</b> keep posting fashion reach content, then use PR/creator tips to convert viewers into followers.</p>
+              <p><b>Warm:</b> {brands.warm.join(", ")}</p>
+              <p><b>Follow up:</b> {brands.followUp.join(", ")}</p>
+              <p><b>Confirmed:</b> {brands.confirmed.slice(0, 6).join(", ")}{brands.confirmed.length > 6 ? "..." : ""}</p>
             </section>
+
             <section className="card">
-              <span className="tiny-label">current strategy</span>
-              <h2>What’s working</h2>
-              <p className="muted"><b>Fashion:</b> gets reach and ShopMy revenue.</p>
-              <p className="muted"><b>Creator/PR tips:</b> convert followers.</p>
-              <p className="muted"><b>Lifestyle:</b> builds trust and brand fit.</p>
-              <p className="muted"><b>Best times:</b> {data.bestPostTimes}. Test 5:30 PM and 8:30 PM.</p>
+              <div className="eyebrow">Current Strategy</div>
+              <h2>What’s Working</h2>
+              <p>{data.currentFocus}</p>
+              <p><b>Best times:</b> {data.bestPostTimes}</p>
+            </section>
+
+            <section className="card wide">
+              <div className="eyebrow">Proof Board</div>
+              <h2>Top Content Winners</h2>
+              {content.map((item, index) => (
+                <div className="contentRow" key={index}>
+                  <b>{item.title}</b>
+                  <span className="metric">{item.metric}</span>
+                  <span className="note">{item.note}</span>
+                </div>
+              ))}
             </section>
           </div>
+        </main>
+      )}
 
+      {activeTab === "content" && (
+        <main className="page">
           <section className="card">
-            <span className="tiny-label">proof board</span>
-            <h2>Top Content Winners</h2>
-            {WINNERS.map((w, idx) => <div className="winner" key={w.title}><div className="thumb">{idx===0?'👚':idx===1?'🫧':idx===2?'💇‍♀️':idx===3?'🌷':idx===4?'🛍️':'📦'}</div><div><b>{w.title}</b><em>{w.metric} · {w.tag}</em><p className="muted">{w.note}</p></div></div>)}
+            <div className="eyebrow">Content</div>
+            <h2>Top Performing Videos</h2>
+            {content.map((item, index) => (
+              <div className="contentEditorRow" key={index}>
+                <div className="two">
+                  <input value={item.title} onChange={(e) => updateContent(index, "title", e.target.value)} placeholder="Video title" />
+                  <input value={item.metric} onChange={(e) => updateContent(index, "metric", e.target.value)} placeholder="Views / followers" />
+                  <button className="xBtn" onClick={() => removeContent(index)}>×</button>
+                </div>
+                <input value={item.note} onChange={(e) => updateContent(index, "note", e.target.value)} placeholder="Why it worked" />
+              </div>
+            ))}
+            <button className="softBtn" onClick={addContent}>+ Add content winner</button>
+            <button className="primaryBtn" onClick={saveAll} style={{ marginLeft: 10 }}>Save content</button>
           </section>
+        </main>
+      )}
 
+      {activeTab === "brands" && (
+        <main className="page">
           <section className="card">
-            <span className="tiny-label">vision board</span>
-            <h2>Dream Brand Board</h2>
-            <div className="dream-board">{DREAM_BRANDS.map(b => <div className="dream" key={b}>✧ {b}</div>)}</div>
+            <div className="eyebrow">Brand Tracker</div>
+            <h2>Outreach Snapshot</h2>
+            <div className="brandColumns section">
+              <div className="brandBox">
+                <h3>Warm Leads</h3>
+                {brands.warm.map((brand) => <div className="brandPill" key={brand}>{brand}</div>)}
+              </div>
+              <div className="brandBox">
+                <h3>Follow Up</h3>
+                {brands.followUp.map((brand) => <div className="brandPill" key={brand}>{brand}</div>)}
+              </div>
+              <div className="brandBox">
+                <h3>Confirmed</h3>
+                {brands.confirmed.map((brand) => <div className="brandPill" key={brand}>{brand}</div>)}
+              </div>
+            </div>
           </section>
-        </>}
+        </main>
+      )}
 
-        {tab === "Ideas" && <Generator title="Viral Content Ideas ✨" placeholder="Example: I got Saltair PR, Target haul part 2, or microinfluencer tips" chips={["What should I post today?", "Target haul part 2", "PR tips video", "ShopMy video idea", "Summer affordable fashion"]} prompt={prompt} setPrompt={setPrompt} result={result} onGenerate={() => quickGenerate('ideas')} />}
-        {tab === "Captions" && <Generator title="Caption Writer ✍️" placeholder="Describe your video" chips={["Target summer haul", "PR haul as a microinfluencer", "Morning room reset", "Amazon tops under $30"]} prompt={prompt} setPrompt={setPrompt} result={result} onGenerate={() => quickGenerate('caption')} />}
-        {tab === "ShopMy" && <>
-          <section className="card"><h2>ShopMy Command Center 🛍️</h2><div className="grid-three"><div className="metric pink"><strong>{data.shopmyLifetime}</strong><span>lifetime</span></div><div className="metric sage"><strong>{data.shopmyPending}</strong><span>pending</span></div><div className="metric blue"><strong>{data.shopmyUpcoming}</strong><span>upcoming</span></div></div></section>
-          <Generator title="Ask ShopMy Strategy" placeholder="Ask about links, collections, products, or clicks" chips={["How do I convert viral viewers into clicks?", "What collections should I make?", "How do I use my Target sales?", "How do I promote ShopMy without being annoying?"]} prompt={prompt} setPrompt={setPrompt} result={result} onGenerate={() => quickGenerate('shopmy')} />
-          <section className="card"><h2>Proven ShopMy Winners</h2>{[["Target Wild Fable Straight Leg Pull-On Pants","2.9K clicks · 136 orders · $430"],["Target Wild Fable Babydoll Tank Top","2.9K clicks · 111 orders · $275"],["Target Wild Fable Pull-On Shorts","1.7K clicks · 65 orders · $152"]].map(([a,b])=><div className="winner" key={a}><div className="thumb">🛍️</div><div><b>{a}</b><em>{b}</em></div></div>)}</section>
-        </>}
-        {tab === "Plan" && <section><h2 className="section-title">Creator Sprint to 10K 🎀</h2><p className="muted">Built from your updated analytics: fashion for reach/revenue, creator tips for followers, lifestyle for trust.</p><div className="plan-grid">{PLAN.map((p,i)=><div className={`plan-card ${i===0?'done':''}`} key={i}><span className="plan-type">{p[4]} Day {i+1} · {p[0]}</span><h3 style={{fontSize:22,margin:'8px 0'}}>{p[1]}</h3><p>♡ {p[2]}</p><p>💬 CTA/Goal: “{p[3]}”</p></div>)}</div></section>}
-        {tab === "Brands" && <section className="card"><h2>Brand Outreach Tracker 📊</h2><p className="muted">90+ brands contacted · {giftingCurrent}/25 gifting · {paidCurrent}/4 paid · {warmLeadCount} warm leads</p><div className="pill-row">{["All","Gifting","Warm Lead","PR List","Paid","Sent","Not Now"].map(f=><button className="pill" onClick={()=>setBrandFilter(f)} key={f}>{f}</button>)}</div><div className="brand-controls"><input placeholder="Search brands" value={brandSearch} onChange={e=>setBrandSearch(e.target.value)}/></div>{filteredBrands.map((b,i)=>{const s=STATUS[b.status]||STATUS.Sent;return <div className="brand-row" key={b.name}><strong>{s.emoji} {b.name}</strong><select className="badge" style={{background:s.bg,color:s.color,border:'0'}} value={b.status} onChange={e=>{const next=[...brands];const realIndex=brands.findIndex(x=>x.name===b.name);next[realIndex]={...next[realIndex],status:e.target.value};setBrands(next)}}>{Object.keys(STATUS).map(k=><option key={k}>{k}</option>)}</select></div>})}</section>}
-        {tab === "Update" && <section className="card"><h2>Update Your Data ⚙️</h2><p className="muted">Paste updated stats here. This saves in your browser using localStorage.</p><textarea className="textarea json" value={draft} onChange={e=>setDraft(e.target.value)} /><button className="btn" onClick={saveData}>Save updated stats</button><button className="pill" onClick={()=>navigator.clipboard.writeText(JSON.stringify(data,null,2))}>Export backup</button></section>}
-      </main>
+      {activeTab === "shopmy" && (
+        <main className="page">
+          <section className="card">
+            <div className="eyebrow">ShopMy</div>
+            <h2>Revenue + Links</h2>
+            <div className="shopGrid section">
+              <div className="shopItem"><span>Lifetime</span><b>{data.shopmyLifetime}</b></div>
+              <div className="shopItem"><span>Pending</span><b>{data.shopmyPending}</b></div>
+              <div className="shopItem"><span>Upcoming</span><b>{data.shopmyUpcoming}</b></div>
+              <div className="shopItem"><span>Paid</span><b>{data.shopmyPaid}</b></div>
+              <div className="shopItem"><span>Trusted shoppers</span><b>{data.trustedShoppers}</b></div>
+              <div className="shopItem"><span>Tier</span><b>{data.shopmyTier}</b></div>
+            </div>
+          </section>
+        </main>
+      )}
+
+      {activeTab === "update" && (
+        <main className="page">
+          <section className="card">
+            <div className="eyebrow">Update</div>
+            <h2>Update Your Info</h2>
+            <p>Type your new numbers into the boxes. Click Save Changes. No code needed.</p>
+
+            <div className="formSection">
+              <h3>TikTok Stats</h3>
+              <div className="formGrid">
+                <Field label="Followers" name="followers" value={data.followers} onChange={updateData} type="number" />
+                <Field label="Follower Goal" name="followerGoal" value={data.followerGoal} onChange={updateData} type="number" />
+                <Field label="Total Likes" name="likesTotal" value={data.likesTotal} onChange={updateData} />
+                <Field label="Views 7D" name="views7d" value={data.views7d} onChange={updateData} />
+                <Field label="Views 60D" name="views60d" value={data.views60d} onChange={updateData} />
+                <Field label="Net Followers 7D" name="netFollowers7d" value={data.netFollowers7d} onChange={updateData} type="number" />
+              </div>
+            </div>
+
+            <div className="formSection">
+              <h3>ShopMy</h3>
+              <div className="formGrid">
+                <Field label="ShopMy Lifetime" name="shopmyLifetime" value={data.shopmyLifetime} onChange={updateData} />
+                <Field label="Pending" name="shopmyPending" value={data.shopmyPending} onChange={updateData} />
+                <Field label="Upcoming" name="shopmyUpcoming" value={data.shopmyUpcoming} onChange={updateData} />
+                <Field label="Paid" name="shopmyPaid" value={data.shopmyPaid} onChange={updateData} />
+                <Field label="Trusted Shoppers" name="trustedShoppers" value={data.trustedShoppers} onChange={updateData} type="number" />
+                <Field label="Tier" name="shopmyTier" value={data.shopmyTier} onChange={updateData} />
+              </div>
+            </div>
+
+            <div className="formSection">
+              <h3>Goals + Strategy</h3>
+              <div className="formGrid">
+                <Field label="Gifting Partners" name="giftingPartners" value={data.giftingPartners} onChange={updateData} type="number" />
+                <Field label="Gifting Goal" name="giftingGoal" value={data.giftingGoal} onChange={updateData} type="number" />
+                <Field label="Warm Leads Count" name="warmLeads" value={data.warmLeads} onChange={updateData} type="number" />
+                <Field label="Paid Collabs" name="paidCollabs" value={data.paidCollabs} onChange={updateData} type="number" />
+                <Field label="Paid Collab Goal" name="paidCollabGoal" value={data.paidCollabGoal} onChange={updateData} type="number" />
+                <Field label="Best Posting Times" name="bestPostTimes" value={data.bestPostTimes} onChange={updateData} />
+              </div>
+              <label className="field" style={{ display: "block", marginTop: 14 }}>
+                <span>Current Focus</span>
+                <textarea value={data.currentFocus} onChange={(e) => updateData("currentFocus", e.target.value)} />
+              </label>
+            </div>
+
+            <div className="formSection">
+              <h3>Brand Lists</h3>
+              <div className="grid2">
+                <ListEditor title="Warm Leads" items={brands.warm} placeholder="New warm lead" onChange={(items) => setBrands({ ...brands, warm: items })} />
+                <ListEditor title="Follow Up" items={brands.followUp} placeholder="New follow up" onChange={(items) => setBrands({ ...brands, followUp: items })} />
+                <ListEditor title="Confirmed Gifting" items={brands.confirmed} placeholder="New gifting partner" onChange={(items) => setBrands({ ...brands, confirmed: items })} />
+              </div>
+            </div>
+
+            <div className="saveBar">
+              <button className="primaryBtn" onClick={saveAll}>Save Changes</button>
+              <button className="softBtn" onClick={resetAll}>Reset</button>
+              {saved && <span className="saved">Saved ✓</span>}
+            </div>
+          </section>
+        </main>
+      )}
     </div>
   );
 }
 
-function Generator({ title, placeholder, chips, prompt, setPrompt, result, onGenerate }) {
-  return <section className="card"><h2>{title}</h2><textarea className="textarea" placeholder={placeholder} value={prompt} onChange={e=>setPrompt(e.target.value)} /><button className="btn" onClick={onGenerate}>Generate</button><div className="pill-row">{chips.map(c=><button className="pill" onClick={()=>setPrompt(c)} key={c}>{c}</button>)}</div>{result && <div className="card result" style={{marginTop:20}}>{result}</div>}</section>
-}
+export default App;
