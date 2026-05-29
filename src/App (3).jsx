@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 
 const DEFAULT_ANALYTICS = {
-  followers: "7,910",
+  followers: "7,877",
   followerGoal: "10K",
   views7d: "1.1M",
   views30d: "1M+",
-  engagementRate: "12.8%",
-  shopmyEarned: "$1,543",
+  engagementRate: "13.1%",
+  shopmyEarned: "$1,516",
   shopmyTier: "Icon",
   trustedShoppers: "404",
   giftingBrands: "Divi, Salt & Stone, Saltair, Prequel",
