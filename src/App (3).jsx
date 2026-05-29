@@ -1,17 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 const DEFAULT_ANALYTICS = {
-  followers: "7,877",
-  followerGoal: "10K",
-  views7d: "1.1M",
-  views30d: "1M+",
+  followers: "7,905",
+  goal: "10K",
+  views60d: "1.7M+",
+  shopmy: "$1,681",
+  giftingConfirmed: "10",
+  giftingGoal: "25",
+  paidCollabs: "0",
+  paidGoal: "4",
   engagementRate: "13.1%",
-  shopmyEarned: "$1,516",
-  shopmyTier: "Icon",
-  trustedShoppers: "404",
-  giftingBrands: "Divi, Salt & Stone, Saltair, Prequel",
-  bestPostingTimes: "4 PM, 6 PM, 9 PM",
-  topContent: "Target Matching Set Haul: 1.1M views\nMorning of self-care: 502.7K views\nThe urge to get this haircut as a brunette: 426.3K views\nAmazon Spring Top Haul: 121.5K views\nSephora kit review: 39.9K views",
+  bestTimes: "4 PM, 6 PM, 9 PM",
+  topContent: "Target haul: 1.1M views\nMorning self-care: 502.7K views\nHaircut video: 426.3K views\nAmazon haul: 121.5K views",
   topShopMy: "Target Wild Fable pants: 136 orders / $430\nTarget Wild Fable tank: 111 orders / $275\nTarget Wild Fable shorts: 65 orders / $152",
 };
 
@@ -21,7 +21,6 @@ const DEFAULT_BRANDS = [
   { name: "Saltair", status: "gifting" },
   { name: "Prequel", status: "gifting" },
   { name: "Naturium", status: "pr_list" },
-  { name: "Paula's Choice", status: "not_now" },
   { name: "Target", status: "sent" },
   { name: "Merit Beauty", status: "sent" },
   { name: "Aveda", status: "sent" },
@@ -33,94 +32,16 @@ const DEFAULT_BRANDS = [
   { name: "Hanni", status: "sent" },
   { name: "Facile", status: "sent" },
   { name: "The Outset", status: "sent" },
-  { name: "Shiseido", status: "sent" },
-  { name: "DECIEM", status: "sent" },
   { name: "Tatcha", status: "sent" },
-  { name: "ELEMIS", status: "sent" },
-  { name: "ColourPop", status: "sent" },
-  { name: "Dior Beauty", status: "sent" },
-  { name: "Rare Beauty", status: "sent" },
-  { name: "Gap Factory", status: "sent" },
-  { name: "HigherDOSE", status: "sent" },
   { name: "Rhode", status: "sent" },
-  { name: "Gorjana", status: "sent" },
-  { name: "Cocokind", status: "sent" },
-  { name: "Skinfix", status: "sent" },
-  { name: "Snif", status: "sent" },
   { name: "Free People", status: "sent" },
-  { name: "Dairy Boy", status: "sent" },
-  { name: "Daily Drills", status: "sent" },
-  { name: "Parke", status: "sent" },
-  { name: "Adanola", status: "sent" },
-  { name: "Sincerely Yours", status: "sent" },
-  { name: "437", status: "sent" },
-  { name: "Olaplex", status: "sent" },
-  { name: "American Eagle", status: "sent" },
-  { name: "JVN Hair", status: "sent" },
-  { name: "Inn Beauty", status: "sent" },
-  { name: "Dieux", status: "sent" },
-  { name: "Glossier", status: "sent" },
-  { name: "Eadem", status: "sent" },
-  { name: "Versed", status: "sent" },
-  { name: "Aritzia", status: "sent" },
-  { name: "Summer Fridays", status: "sent" },
-  { name: "Refy", status: "sent" },
-  { name: "K18", status: "sent" },
-  { name: "Gisou", status: "sent" },
-  { name: "Meshki", status: "sent" },
-  { name: "Cotton On", status: "sent" },
-  { name: "Garage", status: "sent" },
-  { name: "Hollister", status: "sent" },
-  { name: "Grey Bandit", status: "sent" },
-  { name: "Aerie", status: "sent" },
-  { name: "Kopari", status: "sent" },
   { name: "Dae Hair", status: "sent" },
-  { name: "Abercrombie", status: "sent" },
-  { name: "Tower 28", status: "sent" },
   { name: "Kosas", status: "sent" },
+  { name: "Tower 28", status: "sent" },
   { name: "Crown Affair", status: "sent" },
-  { name: "Emi Jay", status: "sent" },
-  { name: "Victoria Beckham Beauty", status: "sent" },
-  { name: "Osea", status: "sent" },
-  { name: "Necessaire", status: "sent" },
-  { name: "Beis", status: "sent" },
-  { name: "Dibs Beauty", status: "sent" },
-  { name: "Supergoop", status: "sent" },
-  { name: "Pretty Little Thing", status: "sent" },
-  { name: "Haus Labs", status: "sent" },
-  { name: "Lake", status: "sent" },
-  { name: "Ilia", status: "sent" },
-  { name: "Madhappy", status: "sent" },
-  { name: "Colorescience", status: "sent" },
-  { name: "Shark Ninja", status: "sent" },
-  { name: "Still Here", status: "sent" },
-  { name: "Set Active", status: "sent" },
-  { name: "Gap", status: "sent" },
-  { name: "Agolde", status: "sent" },
-  { name: "Charlotte Tilbury", status: "sent" },
 ];
 
-const TABS = ["Ideas", "Captions", "ShopMy", "Plan", "Brands", "Update"];
-
-const THIRTY_DAY_PLAN = [
-  { day: 1, type: "Haul", idea: "Target summer haul with Wild Fable matching sets and new arrivals", shopmy: "Link every Target item", cta: "follow for more Target hauls" },
-  { day: 2, type: "Lifestyle", idea: "Summer morning in my life with outfit, coffee, errands, and reset clips", shopmy: "Outfit links and room finds", cta: "follow along for my daily life" },
-  { day: 3, type: "Beauty", idea: "First impressions using a new gifted product in a GRWM", shopmy: "Beauty routine collection", cta: "follow for honest beauty reviews" },
-  { day: 4, type: "Haul", idea: "Amazon summer tops under $30 try-on", shopmy: "Amazon storefront plus ShopMy", cta: "follow for more affordable finds" },
-  { day: 5, type: "Tips", idea: "How I get gifting as a microinfluencer", shopmy: "Creator favorites shelf", cta: "follow for more creator tips" },
-  { day: 6, type: "Beauty", idea: "Haircare gifted unboxing plus first try", shopmy: "Haircare shelf", cta: "follow to see my full review" },
-  { day: 7, type: "Lifestyle", idea: "Morning room reset with clean girl room details", shopmy: "Room and decor finds", cta: "follow for more room inspo" },
-  { day: 8, type: "Haul", idea: "PR haul update with everything I received this week", shopmy: "Gifted products shelf", cta: "follow for more PR hauls" },
-  { day: 9, type: "Beauty", idea: "Everyday summer makeup routine", shopmy: "Makeup routine collection", cta: "follow for more GRWMs" },
-  { day: 10, type: "Haul", idea: "Splurge vs save fashion finds", shopmy: "Splurge and dupe shelves", cta: "follow for honest try-ons" },
-];
-
-const STATUS_CONFIG = {
-  gifting: { label: "Gifting", bg: "#f5e7ee", text: "#8b3a52" },
-  pr_list: { label: "PR List", bg: "#f1eef8", text: "#5f4b8b" },
-  sent: { label: "Sent", bg: "#f8efe7", text: "#8b553a" },
-  not_now: { label: "Not Now", bg: "#eeeeee", text: "#777" },
-};
+const TABS = ["💡 Ideas", "✍️ Captions", "🛍️ ShopMy", "📅 Plan", "📊 Brands", "⚙️ Update"];
 
 function loadSaved(key, fallback) {
   try {
@@ -133,152 +54,117 @@ function loadSaved(key, fallback) {
 
 function Field({ label, value, onChange, placeholder }) {
   return (
-    <label style={{ display: "block" }}>
-      <span style={styles.fieldLabel}>{label}</span>
+    <label style={styles.fieldLabel}>
+      <span>{label}</span>
       <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder || label} style={styles.input} />
     </label>
   );
 }
 
-function TextAreaField({ label, value, onChange, placeholder, rows = 5 }) {
+function TextAreaField({ label, value, onChange, placeholder }) {
   return (
-    <label style={{ display: "block" }}>
-      <span style={styles.fieldLabel}>{label}</span>
-      <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder || label} rows={rows} style={styles.textarea} />
+    <label style={styles.fieldLabelWide}>
+      <span>{label}</span>
+      <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder || label} rows={5} style={styles.textarea} />
     </label>
   );
 }
 
-export default function SophieTool() {
+export default function SophieContentTool() {
   const [activeTab, setActiveTab] = useState(0);
-  const [analytics, setAnalytics] = useState(() => loadSaved("sophieAnalytics", DEFAULT_ANALYTICS));
+  const [analytics, setAnalytics] = useState(() => loadSaved("sophieAnalyticsClean", DEFAULT_ANALYTICS));
+  const [brands, setBrands] = useState(() => loadSaved("sophieBrandsClean", DEFAULT_BRANDS));
   const [draftAnalytics, setDraftAnalytics] = useState(analytics);
-  const [brands, setBrands] = useState(() => loadSaved("sophieBrands", DEFAULT_BRANDS));
-  const [brandDraft, setBrandDraft] = useState("");
-  const [brandFilter, setBrandFilter] = useState("all");
+  const [newBrand, setNewBrand] = useState("");
+  const [newBrandStatus, setNewBrandStatus] = useState("sent");
   const [brandSearch, setBrandSearch] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [captionPrompt, setCaptionPrompt] = useState("");
-  const [shopMyPrompt, setShopMyPrompt] = useState("");
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [brandFilter, setBrandFilter] = useState("all");
   const [savedNote, setSavedNote] = useState("");
 
-  useEffect(() => {
-    localStorage.setItem("sophieAnalytics", JSON.stringify(analytics));
-  }, [analytics]);
-
-  useEffect(() => {
-    localStorage.setItem("sophieBrands", JSON.stringify(brands));
-  }, [brands]);
-
-  useEffect(() => {
-    setBrandDraft(brands.map(b => `${b.name} | ${b.status}`).join("\n"));
-  }, [brands]);
+  const [ideaPrompt, setIdeaPrompt] = useState("");
+  const [ideaResult, setIdeaResult] = useState("");
+  const [captionPrompt, setCaptionPrompt] = useState("");
+  const [captionResult, setCaptionResult] = useState("");
+  const [shopmyPrompt, setShopmyPrompt] = useState("");
+  const [shopmyResult, setShopmyResult] = useState("");
 
   const counts = useMemo(() => {
     return {
+      all: brands.length,
       gifting: brands.filter(b => b.status === "gifting").length,
       sent: brands.filter(b => b.status === "sent").length,
-      all: brands.length,
+      pr: brands.filter(b => b.status === "pr_list").length,
+      notNow: brands.filter(b => b.status === "not_now").length,
     };
   }, [brands]);
 
-  const context = useMemo(() => `
-You are a TikTok content strategist for Sophie (@sophieslifeatm), a beauty, fashion, and lifestyle creator.
+  const filteredBrands = brands.filter(b => {
+    const matchesSearch = b.name.toLowerCase().includes(brandSearch.toLowerCase());
+    const matchesFilter = brandFilter === "all" || b.status === brandFilter;
+    return matchesSearch && matchesFilter;
+  });
 
-CURRENT ANALYTICS:
-- Followers: ${analytics.followers}, goal: ${analytics.followerGoal}
-- 7 day views: ${analytics.views7d}
-- 30 day views: ${analytics.views30d}
-- Engagement rate: ${analytics.engagementRate}
-- ShopMy tier: ${analytics.shopmyTier}
-- ShopMy earned: ${analytics.shopmyEarned}
-- Trusted shoppers: ${analytics.trustedShoppers}
-- Gifting brands: ${analytics.giftingBrands}
-- Best posting times: ${analytics.bestPostingTimes}
-
-TOP CONTENT:
-${analytics.topContent}
-
-TOP SHOPMY CONVERTERS:
-${analytics.topShopMy}
-
-SOPHIE'S VOICE:
-Casual, warm, relatable, like texting a friend. Use emojis naturally: 🤍 ✨ 💕 🫶. Keep it specific, not generic.
-`, [analytics]);
-
-  async function callClaude(systemExtra, userMsg) {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: context + "\n" + systemExtra,
-        messages: [{ role: "user", content: userMsg }],
-      }),
-    });
-    const data = await res.json();
-    return data.content?.[0]?.text || "Something went wrong. Try again.";
-  }
-
-  async function generate(kind) {
-    const value = kind === "caption" ? captionPrompt : kind === "shopmy" ? shopMyPrompt : prompt;
-    if (!value.trim()) return;
-    setLoading(true);
-    setResult("");
-    try {
-      const instructions = {
-        ideas: "Generate 5 specific viral TikTok ideas for Sophie. Include hook text, concept, ShopMy angle, and why it should perform well.",
-        caption: "Write 2 TikTok caption options in Sophie's voice. Include a strong hook, natural emojis, follow CTA, and 5 to 8 hashtags.",
-        shopmy: "Give specific ShopMy strategy advice for Sophie. Include what to link, how to organize shelves, video CTA wording, and how to turn views into clicks.",
-      };
-      setResult(await callClaude(instructions[kind], value));
-    } catch {
-      setResult("Error connecting. Try again.");
-    }
-    setLoading(false);
-  }
+  const followersNumber = Number(String(analytics.followers).replace(/[^0-9]/g, "")) || 0;
+  const goalNumber = Number(String(analytics.goal).replace(/[^0-9]/g, "")) || 10000;
+  const followerProgress = Math.min(100, Math.round((followersNumber / goalNumber) * 100));
+  const giftingProgress = Math.min(100, Math.round((Number(analytics.giftingConfirmed) / Number(analytics.giftingGoal || 25)) * 100));
+  const paidProgress = Math.min(100, Math.round((Number(analytics.paidCollabs) / Number(analytics.paidGoal || 4)) * 100));
 
   function saveAnalytics() {
     setAnalytics(draftAnalytics);
-    setSavedNote("Saved. Your dashboard and AI prompts are updated.");
+    localStorage.setItem("sophieAnalyticsClean", JSON.stringify(draftAnalytics));
+    setSavedNote("Saved! Your dashboard is updated.");
     setTimeout(() => setSavedNote(""), 2500);
   }
 
-  function saveBrands() {
-    const parsed = brandDraft
-      .split("\n")
-      .map(line => line.trim())
-      .filter(Boolean)
-      .map(line => {
-        const [name, status = "sent"] = line.split("|").map(part => part.trim());
-        const cleanStatus = ["gifting", "pr_list", "sent", "not_now"].includes(status) ? status : "sent";
-        return { name, status: cleanStatus };
-      });
-    setBrands(parsed);
-    setSavedNote("Saved. Your brand tracker is updated.");
-    setTimeout(() => setSavedNote(""), 2500);
+  function addBrand() {
+    if (!newBrand.trim()) return;
+    const updated = [...brands, { name: newBrand.trim(), status: newBrandStatus }];
+    setBrands(updated);
+    localStorage.setItem("sophieBrandsClean", JSON.stringify(updated));
+    setNewBrand("");
   }
 
-  const filteredBrands = brands.filter(b => {
-    const matchesFilter = brandFilter === "all" || b.status === brandFilter;
-    const matchesSearch = b.name.toLowerCase().includes(brandSearch.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  function updateBrandStatus(index, status) {
+    const brandToChange = filteredBrands[index];
+    const updated = brands.map(b => b.name === brandToChange.name ? { ...b, status } : b);
+    setBrands(updated);
+    localStorage.setItem("sophieBrandsClean", JSON.stringify(updated));
+  }
+
+  function deleteBrand(index) {
+    const brandToDelete = filteredBrands[index];
+    const updated = brands.filter(b => b.name !== brandToDelete.name);
+    setBrands(updated);
+    localStorage.setItem("sophieBrandsClean", JSON.stringify(updated));
+  }
+
+  function generateIdeas() {
+    const topic = ideaPrompt.trim() || "my next TikTok";
+    setIdeaResult(`1. ${topic} but make it feel like a casual best friend recommendation\nHook: “I fear this is about to be my entire personality…”\nAngle: Film it naturally, then link everything in your ShopMy.\nWhy it works: Your audience responds best to casual hauls and finds that feel real.\n\n2. The follow-up video people need\nHook: “Since my last one did so well, here’s part 2…”\nAngle: Repeat your viral format with new products or a more specific category.\nWhy it works: Part 2 videos make people feel like they are already invested.\n\n3. What I would actually buy again\nHook: “Things I own that are actually worth it…”\nAngle: Put the strongest ShopMy products first.\nWhy it works: It feels honest and drives clicks because it sounds personal.`);
+  }
+
+  function generateCaption() {
+    const topic = captionPrompt.trim() || "this video";
+    setCaptionResult(`Option 1:\n${topic} because I clearly cannot stop finding cute things 🤍 linking everything I can in my bio!! follow for more everyday finds + hauls ✨ #haul #fashionfinds #shopmy #creatorlife #grwm\n\nOption 2:\nI was not planning on loving these this much but here we are 🫶 everything is linked in my bio, follow for more cute finds + honest reviews 💕 #tiktokfinds #beautyfinds #outfitinspo #shopmy #lifestylecreator`);
+  }
+
+  function generateShopmy() {
+    const topic = shopmyPrompt.trim() || "my ShopMy";
+    setShopmyResult(`For ${topic}, I would focus on making the links feel like a helpful part of the video, not an afterthought.\n\nBest move:\nMention “I linked everything in my bio” in the caption and pin a comment with the exact category name.\n\nWhat to prioritize:\n1. Target and Amazon finds first because those are your proven converters.\n2. Any product shown on camera, even if it is only in the background.\n3. Create shelves that match your video titles, like “Target haul,” “Room reset,” or “Summer basics.”\n\nEasy CTA:\n“Linked everything I could find in my bio under my ShopMy 🤍”`);
+  }
 
   return (
     <div style={styles.page}>
-      <header style={styles.hero}>
-        <div style={styles.eyebrow}>@sophieslifeatm</div>
+      <header style={styles.header}>
+        <p style={styles.handle}>@sophieslifeatm</p>
         <h1 style={styles.title}>Sophie's Content Studio</h1>
-        <p style={styles.subtitle}>{analytics.followers} → {analytics.followerGoal} followers · ShopMy {analytics.shopmyTier} · {analytics.shopmyEarned} earned</p>
+        <p style={styles.subtitle}>Simple creator workspace for content ideas, captions, ShopMy, brands, and easy updates.</p>
       </header>
 
       <nav style={styles.tabs}>
-        {TABS.map((tab, i) => (
-          <button key={tab} onClick={() => { setActiveTab(i); setResult(""); }} style={{ ...styles.tab, ...(activeTab === i ? styles.activeTab : {}) }}>
+        {TABS.map((tab, index) => (
+          <button key={tab} onClick={() => setActiveTab(index)} style={{ ...styles.tab, ...(activeTab === index ? styles.activeTab : {}) }}>
             {tab}
           </button>
         ))}
@@ -286,59 +172,51 @@ Casual, warm, relatable, like texting a friend. Use emojis naturally: 🤍 ✨ �
 
       <main style={styles.main}>
         {activeTab === 0 && (
-          <section>
+          <section style={styles.card}>
             <h2 style={styles.h2}>Viral Content Ideas ✨</h2>
-            <p style={styles.body}>Type a product, vibe, trend, or video idea and get content ideas based on what already performs for you.</p>
-            <div style={styles.card}>
-              <textarea value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="Example: I just got a Saltair package, or summer Amazon finds, or Target haul follow-up" style={styles.bigPrompt} />
-              <button onClick={() => generate("ideas")} style={styles.primaryButton}>{loading ? "Generating..." : "Generate Ideas"}</button>
-            </div>
-            <QuickChips setPrompt={setPrompt} chips={["Capitalize on my viral Target haul", "PR unboxing ideas", "Summer lifestyle content", "Microinfluencer tips", "Affordable dupes", "ShopMy tutorial"]} />
-            <Result result={result} />
+            <p style={styles.body}>Type a product, vibe, or video idea and get simple content ideas.</p>
+            <textarea value={ideaPrompt} onChange={e => setIdeaPrompt(e.target.value)} placeholder="Example: summer Amazon finds, PR unboxing, Target haul follow-up" rows={5} style={styles.textarea} />
+            <button onClick={generateIdeas} style={styles.primaryButton}>Generate Ideas</button>
+            {ideaResult && <div style={styles.result}>{ideaResult}</div>}
           </section>
         )}
 
         {activeTab === 1 && (
-          <section>
+          <section style={styles.card}>
             <h2 style={styles.h2}>Caption Writer ✍️</h2>
-            <p style={styles.body}>Describe the video and get captions that sound like you, with a hook, CTA, and hashtags.</p>
-            <div style={styles.card}>
-              <textarea value={captionPrompt} onChange={e => setCaptionPrompt(e.target.value)} placeholder="Example: Target summer haul showing 5 Wild Fable sets, all under $40" style={styles.bigPrompt} />
-              <button onClick={() => generate("caption")} style={styles.primaryButton}>{loading ? "Writing..." : "Write Caption"}</button>
-            </div>
-            <Result result={result} />
+            <p style={styles.body}>Describe your video and get captions in your style.</p>
+            <textarea value={captionPrompt} onChange={e => setCaptionPrompt(e.target.value)} placeholder="Example: Target summer haul with 5 cute sets" rows={5} style={styles.textarea} />
+            <button onClick={generateCaption} style={styles.primaryButton}>Write Caption</button>
+            {captionResult && <div style={styles.result}>{captionResult}</div>}
           </section>
         )}
 
         {activeTab === 2 && (
-          <section>
+          <section style={styles.card}>
             <h2 style={styles.h2}>ShopMy Strategy 🛍️</h2>
-            <p style={styles.body}>Ask what to link, how to organize shelves, or how to turn viral views into clicks.</p>
-            <div style={styles.simpleGrid}>
-              <MiniStat label="ShopMy" value={analytics.shopmyTier} />
-              <MiniStat label="Earned" value={analytics.shopmyEarned} />
-              <MiniStat label="Shoppers" value={analytics.trustedShoppers} />
-              <MiniStat label="Best Views" value={analytics.views7d} />
-            </div>
-            <div style={styles.card}>
-              <textarea value={shopMyPrompt} onChange={e => setShopMyPrompt(e.target.value)} placeholder="Example: How do I get more clicks from my Target haul views?" style={styles.bigPrompt} />
-              <button onClick={() => generate("shopmy")} style={styles.primaryButton}>{loading ? "Thinking..." : "Get Strategy"}</button>
-            </div>
-            <Result result={result} />
+            <p style={styles.body}>Ask for ShopMy organization, link strategy, or video CTA help.</p>
+            <textarea value={shopmyPrompt} onChange={e => setShopmyPrompt(e.target.value)} placeholder="Example: How do I convert my Target haul views into clicks?" rows={5} style={styles.textarea} />
+            <button onClick={generateShopmy} style={styles.primaryButton}>Get Strategy</button>
+            {shopmyResult && <div style={styles.result}>{shopmyResult}</div>}
           </section>
         )}
 
         {activeTab === 3 && (
-          <section>
-            <h2 style={styles.h2}>Simple 30-Day Plan 📅</h2>
-            <p style={styles.body}>A clean daily content plan based on your strongest categories: hauls, PR, lifestyle, beauty, and creator tips.</p>
-            <div style={{ display: "grid", gap: 12 }}>
-              {THIRTY_DAY_PLAN.map(item => (
-                <div key={item.day} style={styles.planCard}>
-                  <div style={styles.planTop}><span>Day {item.day}</span><span style={styles.pill}>{item.type}</span></div>
-                  <h3 style={styles.planTitle}>{item.idea}</h3>
-                  <p style={styles.planText}>ShopMy: {item.shopmy}</p>
-                  <p style={styles.planText}>CTA: {item.cta}</p>
+          <section style={styles.card}>
+            <h2 style={styles.h2}>30-Day Plan 📅</h2>
+            <div style={styles.planGrid}>
+              {[
+                "Target or Amazon haul with exact links",
+                "PR unboxing with quick first impressions",
+                "Morning room reset with ShopMy links",
+                "Microinfluencer tips part 2",
+                "Affordable dupes under $30",
+                "GRWM using products you can link",
+                "Weekly recap of favorite finds",
+              ].map((item, i) => (
+                <div key={item} style={styles.planItem}>
+                  <span style={styles.day}>Day {i + 1}</span>
+                  <p>{item}</p>
                 </div>
               ))}
             </div>
@@ -346,63 +224,74 @@ Casual, warm, relatable, like texting a friend. Use emojis naturally: 🤍 ✨ �
         )}
 
         {activeTab === 4 && (
-          <section>
+          <section style={styles.card}>
             <h2 style={styles.h2}>Brand Tracker 📊</h2>
             <p style={styles.body}>{counts.all} brands total · {counts.gifting} gifting · {counts.sent} sent</p>
+            <div style={styles.formGridSmall}>
+              <input value={newBrand} onChange={e => setNewBrand(e.target.value)} placeholder="Add brand name" style={styles.input} />
+              <select value={newBrandStatus} onChange={e => setNewBrandStatus(e.target.value)} style={styles.input}>
+                <option value="sent">Sent</option>
+                <option value="gifting">Gifting</option>
+                <option value="pr_list">PR List</option>
+                <option value="not_now">Not Now</option>
+              </select>
+              <button onClick={addBrand} style={styles.primaryButtonSmall}>Add</button>
+            </div>
             <div style={styles.filterRow}>
               {["all", "gifting", "pr_list", "sent", "not_now"].map(status => (
                 <button key={status} onClick={() => setBrandFilter(status)} style={{ ...styles.filterButton, ...(brandFilter === status ? styles.activeFilter : {}) }}>
-                  {status === "all" ? "All" : STATUS_CONFIG[status].label}
+                  {status === "all" ? "All" : status.replace("_", " ")}
                 </button>
               ))}
             </div>
             <input value={brandSearch} onChange={e => setBrandSearch(e.target.value)} placeholder="Search brands" style={styles.input} />
-            <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
-              {filteredBrands.map(b => {
-                const config = STATUS_CONFIG[b.status] || STATUS_CONFIG.sent;
-                return (
-                  <div key={`${b.name}-${b.status}`} style={styles.brandRow}>
-                    <span>{b.name}</span>
-                    <span style={{ ...styles.status, background: config.bg, color: config.text }}>{config.label}</span>
-                  </div>
-                );
-              })}
+            <div style={styles.brandList}>
+              {filteredBrands.map((brand, index) => (
+                <div key={brand.name} style={styles.brandRow}>
+                  <span style={styles.brandName}>{brand.name}</span>
+                  <select value={brand.status} onChange={e => updateBrandStatus(index, e.target.value)} style={styles.statusSelect}>
+                    <option value="sent">Sent</option>
+                    <option value="gifting">Gifting</option>
+                    <option value="pr_list">PR List</option>
+                    <option value="not_now">Not Now</option>
+                  </select>
+                  <button onClick={() => deleteBrand(index)} style={styles.deleteButton}>×</button>
+                </div>
+              ))}
             </div>
           </section>
         )}
 
         {activeTab === 5 && (
-          <section>
-            <h2 style={styles.h2}>Update Your Dashboard</h2>
-            <p style={styles.body}>Change your analytics here instead of editing code. Press save and the site will update automatically.</p>
-
+          <section style={styles.card}>
+            <h2 style={styles.h2}>Update Your Info ⚙️</h2>
+            <p style={styles.body}>This is the easy update tab. Type your new numbers in the boxes and press save. No code or JSON needed.</p>
             {savedNote && <div style={styles.savedNote}>{savedNote}</div>}
 
-            <div style={styles.card}>
-              <h3 style={styles.cardTitle}>Main analytics</h3>
-              <div style={styles.formGrid}>
-                <Field label="Followers" value={draftAnalytics.followers} onChange={v => setDraftAnalytics({ ...draftAnalytics, followers: v })} />
-                <Field label="Follower Goal" value={draftAnalytics.followerGoal} onChange={v => setDraftAnalytics({ ...draftAnalytics, followerGoal: v })} />
-                <Field label="7 Day Views" value={draftAnalytics.views7d} onChange={v => setDraftAnalytics({ ...draftAnalytics, views7d: v })} />
-                <Field label="30 Day Views" value={draftAnalytics.views30d} onChange={v => setDraftAnalytics({ ...draftAnalytics, views30d: v })} />
-                <Field label="Engagement Rate" value={draftAnalytics.engagementRate} onChange={v => setDraftAnalytics({ ...draftAnalytics, engagementRate: v })} />
-                <Field label="Best Posting Times" value={draftAnalytics.bestPostingTimes} onChange={v => setDraftAnalytics({ ...draftAnalytics, bestPostingTimes: v })} />
-                <Field label="ShopMy Tier" value={draftAnalytics.shopmyTier} onChange={v => setDraftAnalytics({ ...draftAnalytics, shopmyTier: v })} />
-                <Field label="ShopMy Earned" value={draftAnalytics.shopmyEarned} onChange={v => setDraftAnalytics({ ...draftAnalytics, shopmyEarned: v })} />
-                <Field label="Trusted Shoppers" value={draftAnalytics.trustedShoppers} onChange={v => setDraftAnalytics({ ...draftAnalytics, trustedShoppers: v })} />
-                <Field label="Gifting Brands" value={draftAnalytics.giftingBrands} onChange={v => setDraftAnalytics({ ...draftAnalytics, giftingBrands: v })} />
-              </div>
-              <TextAreaField label="Top Content" value={draftAnalytics.topContent} onChange={v => setDraftAnalytics({ ...draftAnalytics, topContent: v })} />
-              <TextAreaField label="Top ShopMy Products" value={draftAnalytics.topShopMy} onChange={v => setDraftAnalytics({ ...draftAnalytics, topShopMy: v })} />
-              <button onClick={saveAnalytics} style={styles.primaryButton}>Save Analytics</button>
+            <div style={styles.formGrid}>
+              <Field label="Followers" value={draftAnalytics.followers} onChange={v => setDraftAnalytics({ ...draftAnalytics, followers: v })} />
+              <Field label="Follower Goal" value={draftAnalytics.goal} onChange={v => setDraftAnalytics({ ...draftAnalytics, goal: v })} />
+              <Field label="Views 60 Days" value={draftAnalytics.views60d} onChange={v => setDraftAnalytics({ ...draftAnalytics, views60d: v })} />
+              <Field label="ShopMy Earned" value={draftAnalytics.shopmy} onChange={v => setDraftAnalytics({ ...draftAnalytics, shopmy: v })} />
+              <Field label="Gifting Confirmed" value={draftAnalytics.giftingConfirmed} onChange={v => setDraftAnalytics({ ...draftAnalytics, giftingConfirmed: v })} />
+              <Field label="Gifting Goal" value={draftAnalytics.giftingGoal} onChange={v => setDraftAnalytics({ ...draftAnalytics, giftingGoal: v })} />
+              <Field label="Paid Collabs" value={draftAnalytics.paidCollabs} onChange={v => setDraftAnalytics({ ...draftAnalytics, paidCollabs: v })} />
+              <Field label="Paid Goal" value={draftAnalytics.paidGoal} onChange={v => setDraftAnalytics({ ...draftAnalytics, paidGoal: v })} />
+              <Field label="Engagement Rate" value={draftAnalytics.engagementRate} onChange={v => setDraftAnalytics({ ...draftAnalytics, engagementRate: v })} />
+              <Field label="Best Posting Times" value={draftAnalytics.bestTimes} onChange={v => setDraftAnalytics({ ...draftAnalytics, bestTimes: v })} />
             </div>
+            <TextAreaField label="Top Content" value={draftAnalytics.topContent} onChange={v => setDraftAnalytics({ ...draftAnalytics, topContent: v })} />
+            <TextAreaField label="Top ShopMy Products" value={draftAnalytics.topShopMy} onChange={v => setDraftAnalytics({ ...draftAnalytics, topShopMy: v })} />
+            <button onClick={saveAnalytics} style={styles.primaryButton}>Save Updates</button>
+          </section>
+        )}
 
-            <div style={styles.card}>
-              <h3 style={styles.cardTitle}>Brand tracker</h3>
-              <p style={styles.helpText}>Use this format: Brand Name | status. Status options: gifting, pr_list, sent, not_now.</p>
-              <textarea value={brandDraft} onChange={e => setBrandDraft(e.target.value)} rows={12} style={styles.textarea} />
-              <button onClick={saveBrands} style={styles.primaryButton}>Save Brands</button>
-            </div>
+        {activeTab !== 5 && (
+          <section style={styles.progressCard}>
+            <h3 style={styles.cardTitle}>Glow Up Tracker</h3>
+            <Progress label="Followers" value={`${analytics.followers} / ${analytics.goal}`} percent={followerProgress} />
+            <Progress label="Gifting" value={`${analytics.giftingConfirmed} / ${analytics.giftingGoal}`} percent={giftingProgress} />
+            <Progress label="Paid collabs" value={`${analytics.paidCollabs} / ${analytics.paidGoal}`} percent={paidProgress} />
           </section>
         )}
       </main>
@@ -410,25 +299,11 @@ Casual, warm, relatable, like texting a friend. Use emojis naturally: 🤍 ✨ �
   );
 }
 
-function QuickChips({ chips, setPrompt }) {
+function Progress({ label, value, percent }) {
   return (
-    <div style={{ margin: "18px 0" }}>
-      <p style={styles.chipTitle}>Quick prompts</p>
-      <div style={styles.chips}>{chips.map(chip => <button key={chip} onClick={() => setPrompt(chip)} style={styles.chip}>{chip}</button>)}</div>
-    </div>
-  );
-}
-
-function Result({ result }) {
-  if (!result) return null;
-  return <div style={styles.result}>{result}</div>;
-}
-
-function MiniStat({ label, value }) {
-  return (
-    <div style={styles.miniStat}>
-      <div style={styles.miniValue}>{value}</div>
-      <div style={styles.miniLabel}>{label}</div>
+    <div style={styles.progressWrap}>
+      <div style={styles.progressTop}><span>{label}</span><span>{value}</span></div>
+      <div style={styles.progressTrack}><div style={{ ...styles.progressFill, width: `${percent}%` }} /></div>
     </div>
   );
 }
@@ -436,285 +311,302 @@ function MiniStat({ label, value }) {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #fff8f9 0%, #ffffff 48%, #f7f2fb 100%)",
-    fontFamily: "Georgia, serif",
-    color: "#2d1b1b",
+    background: "linear-gradient(135deg, #fffaf5 0%, #fff5f7 50%, #f8f2ff 100%)",
+    color: "#342126",
+    fontFamily: "Georgia, 'Times New Roman', serif",
   },
-  hero: {
-    padding: "42px 20px 34px",
+  header: {
+    padding: "56px 24px 42px",
     textAlign: "center",
-    background: "linear-gradient(135deg, #3b1d27 0%, #74344b 100%)",
-    color: "white",
+    background: "linear-gradient(135deg, #3b1f27 0%, #7f344d 100%)",
   },
-  eyebrow: {
-    fontSize: 12,
-    letterSpacing: 4,
+  handle: {
+    margin: 0,
+    color: "rgba(255,255,255,.65)",
+    letterSpacing: 6,
     textTransform: "uppercase",
-    color: "rgba(255,230,235,.72)",
-    marginBottom: 10,
+    fontSize: 13,
   },
   title: {
-    margin: 0,
-    fontSize: 42,
-    lineHeight: 1.1,
-    fontWeight: 400,
+    margin: "12px 0 10px",
+    color: "#fff",
+    fontSize: "clamp(38px, 7vw, 72px)",
+    fontWeight: 500,
+    lineHeight: 1,
   },
   subtitle: {
-    margin: "14px auto 0",
+    maxWidth: 680,
+    margin: "0 auto",
+    color: "rgba(255,235,240,.82)",
+    fontFamily: "Arial, sans-serif",
     fontSize: 18,
-    color: "rgba(255,225,232,.85)",
+    lineHeight: 1.45,
   },
   tabs: {
     display: "flex",
-    justifyContent: "center",
-    gap: 6,
-    padding: "0 16px",
-    background: "#fff",
-    borderBottom: "1px solid #f0e5e8",
+    gap: 8,
     overflowX: "auto",
+    padding: "14px 20px",
+    background: "rgba(255,255,255,.72)",
+    borderBottom: "1px solid #efd4dc",
+    position: "sticky",
+    top: 0,
+    zIndex: 2,
   },
   tab: {
+    border: "1px solid transparent",
     background: "transparent",
-    border: "none",
-    borderBottom: "3px solid transparent",
-    padding: "18px 16px 14px",
-    color: "#9a8f92",
-    fontFamily: "inherit",
-    fontSize: 17,
+    color: "#8b6d76",
+    borderRadius: 999,
+    padding: "10px 16px",
+    fontWeight: 700,
     cursor: "pointer",
     whiteSpace: "nowrap",
+    fontFamily: "Arial, sans-serif",
   },
   activeTab: {
-    color: "#8b3a52",
-    borderBottomColor: "#8b3a52",
-    fontWeight: 700,
+    background: "#fff",
+    color: "#9a3f5f",
+    border: "1px solid #e8bdca",
+    boxShadow: "0 6px 18px rgba(143, 58, 82, .08)",
   },
   main: {
-    maxWidth: 960,
-    margin: "0 auto",
-    padding: "42px 22px 80px",
-  },
-  h2: {
-    fontSize: 34,
-    fontWeight: 400,
-    margin: "0 0 10px",
-  },
-  body: {
-    fontSize: 19,
-    lineHeight: 1.55,
-    color: "#7f7778",
-    maxWidth: 760,
-    margin: "0 0 28px",
+    width: "min(1120px, calc(100% - 32px))",
+    margin: "36px auto",
+    display: "grid",
+    gap: 24,
   },
   card: {
     background: "rgba(255,255,255,.9)",
-    border: "1px solid #f0d9df",
-    borderRadius: 22,
-    padding: 22,
-    boxShadow: "0 18px 40px rgba(139,58,82,.07)",
-    marginBottom: 20,
+    border: "1px solid #edcbd5",
+    borderRadius: 28,
+    padding: "28px",
+    boxShadow: "0 20px 60px rgba(143,58,82,.08)",
   },
-  cardTitle: {
-    margin: "0 0 16px",
-    fontSize: 22,
-    fontWeight: 400,
-  },
-  bigPrompt: {
-    width: "100%",
-    minHeight: 145,
-    resize: "vertical",
-    border: "none",
-    outline: "none",
-    background: "transparent",
-    color: "#2d1b1b",
-    fontFamily: "inherit",
-    fontSize: 20,
-    lineHeight: 1.55,
-    boxSizing: "border-box",
-  },
-  primaryButton: {
-    width: "100%",
-    border: "none",
-    borderRadius: 16,
-    padding: "16px 22px",
-    background: "linear-gradient(135deg, #a24361 0%, #6d2b40 100%)",
-    color: "white",
-    fontFamily: "inherit",
-    fontSize: 18,
-    cursor: "pointer",
-    marginTop: 14,
-  },
-  chipTitle: {
-    color: "#aaa",
-    fontSize: 15,
-    textTransform: "uppercase",
-    letterSpacing: 2,
-    margin: "0 0 12px",
-  },
-  chips: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  chip: {
-    background: "#fff8f9",
-    border: "1px solid #efc9d3",
-    borderRadius: 999,
-    padding: "10px 18px",
-    color: "#8b3a52",
-    fontFamily: "inherit",
-    fontSize: 16,
-    cursor: "pointer",
-  },
-  result: {
-    whiteSpace: "pre-wrap",
-    background: "#fff",
-    border: "1px solid #f0d9df",
-    borderRadius: 22,
+  progressCard: {
+    background: "rgba(255,255,255,.75)",
+    border: "1px solid #edcbd5",
+    borderRadius: 24,
     padding: 24,
+  },
+  h2: {
+    margin: "0 0 8px",
+    color: "#963a5a",
+    fontSize: "clamp(30px, 4vw, 46px)",
+    lineHeight: 1.05,
+    fontWeight: 600,
+  },
+  body: {
+    margin: "0 0 22px",
+    color: "#806b72",
+    fontFamily: "Arial, sans-serif",
     fontSize: 17,
-    lineHeight: 1.65,
-    boxShadow: "0 18px 40px rgba(139,58,82,.07)",
+    lineHeight: 1.5,
   },
-  simpleGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-    gap: 12,
-    marginBottom: 18,
-  },
-  miniStat: {
+  input: {
+    width: "100%",
+    boxSizing: "border-box",
+    border: "1px solid #edcbd5",
+    borderRadius: 16,
+    padding: "14px 16px",
+    fontSize: 16,
+    outline: "none",
     background: "#fff",
-    border: "1px solid #f0d9df",
+    color: "#342126",
+    fontFamily: "Arial, sans-serif",
+  },
+  textarea: {
+    width: "100%",
+    boxSizing: "border-box",
+    border: "1px solid #edcbd5",
     borderRadius: 18,
     padding: 18,
+    fontSize: 16,
+    lineHeight: 1.5,
+    outline: "none",
+    resize: "vertical",
+    background: "#fff",
+    color: "#342126",
+    fontFamily: "Arial, sans-serif",
   },
-  miniValue: {
-    color: "#8b3a52",
-    fontSize: 28,
-    fontWeight: 700,
+  primaryButton: {
+    marginTop: 14,
+    width: "100%",
+    border: "none",
+    borderRadius: 18,
+    padding: "15px 20px",
+    fontSize: 17,
+    fontWeight: 800,
+    cursor: "pointer",
+    color: "#fff",
+    background: "linear-gradient(135deg, #9b3f5f, #6f2b41)",
+    fontFamily: "Arial, sans-serif",
   },
-  miniLabel: {
-    color: "#9a8f92",
+  primaryButtonSmall: {
+    border: "none",
+    borderRadius: 16,
+    padding: "12px 18px",
+    fontSize: 15,
+    fontWeight: 800,
+    cursor: "pointer",
+    color: "#fff",
+    background: "linear-gradient(135deg, #9b3f5f, #6f2b41)",
+    fontFamily: "Arial, sans-serif",
+  },
+  result: {
+    marginTop: 18,
+    background: "#fff7f9",
+    border: "1px solid #edcbd5",
+    borderRadius: 20,
+    padding: 20,
+    whiteSpace: "pre-wrap",
+    color: "#493139",
+    fontFamily: "Arial, sans-serif",
+    lineHeight: 1.6,
+  },
+  formGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: 16,
+  },
+  formGridSmall: {
+    display: "grid",
+    gridTemplateColumns: "2fr 1fr auto",
+    gap: 10,
+    marginBottom: 16,
+  },
+  fieldLabel: {
+    display: "grid",
+    gap: 7,
+    color: "#9a6b7a",
+    fontFamily: "Arial, sans-serif",
+    fontWeight: 800,
     fontSize: 13,
     textTransform: "uppercase",
     letterSpacing: 1,
   },
-  planCard: {
-    background: "#fff",
-    border: "1px solid #f0d9df",
-    borderRadius: 18,
-    padding: 18,
+  fieldLabelWide: {
+    display: "grid",
+    gap: 7,
+    marginTop: 16,
+    color: "#9a6b7a",
+    fontFamily: "Arial, sans-serif",
+    fontWeight: 800,
+    fontSize: 13,
+    textTransform: "uppercase",
+    letterSpacing: 1,
   },
-  planTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    color: "#9a8f92",
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  pill: {
-    background: "#fff2f5",
-    color: "#8b3a52",
-    borderRadius: 999,
-    padding: "5px 12px",
-  },
-  planTitle: {
-    margin: "0 0 8px",
-    fontSize: 19,
-    fontWeight: 500,
-  },
-  planText: {
-    margin: "4px 0",
-    color: "#777",
-    fontSize: 15,
+  savedNote: {
+    background: "#fff0f5",
+    border: "1px solid #edcbd5",
+    color: "#963a5a",
+    padding: "12px 16px",
+    borderRadius: 16,
+    marginBottom: 18,
+    fontFamily: "Arial, sans-serif",
+    fontWeight: 700,
   },
   filterRow: {
     display: "flex",
     flexWrap: "wrap",
     gap: 8,
-    marginBottom: 14,
+    margin: "14px 0",
   },
   filterButton: {
-    border: "1px solid #f0d9df",
+    border: "1px solid #edcbd5",
     background: "#fff",
-    color: "#777",
+    color: "#806b72",
     borderRadius: 999,
-    padding: "9px 16px",
-    fontFamily: "inherit",
+    padding: "8px 14px",
     cursor: "pointer",
+    fontFamily: "Arial, sans-serif",
+    fontWeight: 700,
+    textTransform: "capitalize",
   },
   activeFilter: {
-    background: "#8b3a52",
-    color: "#fff",
+    color: "#963a5a",
+    background: "#fff2f6",
+  },
+  brandList: {
+    display: "grid",
+    gap: 8,
+    marginTop: 14,
   },
   brandRow: {
-    background: "#fff",
-    border: "1px solid #f0d9df",
-    borderRadius: 14,
-    padding: "14px 16px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 14,
-    fontSize: 16,
-  },
-  status: {
-    borderRadius: 999,
-    padding: "5px 12px",
-    fontSize: 13,
-    whiteSpace: "nowrap",
-  },
-  formGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-    gap: 14,
-    marginBottom: 16,
-  },
-  fieldLabel: {
-    display: "block",
-    color: "#8b3a52",
-    fontSize: 14,
-    marginBottom: 6,
-  },
-  input: {
-    width: "100%",
-    boxSizing: "border-box",
-    border: "1px solid #edd5dc",
-    borderRadius: 14,
-    padding: "13px 15px",
+    gridTemplateColumns: "1fr 150px 42px",
+    gap: 10,
+    alignItems: "center",
     background: "#fff",
-    color: "#2d1b1b",
-    fontFamily: "inherit",
-    fontSize: 16,
-    outline: "none",
+    border: "1px solid #f2d7df",
+    borderRadius: 16,
+    padding: 12,
+    fontFamily: "Arial, sans-serif",
   },
-  textarea: {
-    width: "100%",
-    boxSizing: "border-box",
-    border: "1px solid #edd5dc",
-    borderRadius: 14,
-    padding: "13px 15px",
-    background: "#fff",
-    color: "#2d1b1b",
-    fontFamily: "inherit",
-    fontSize: 16,
-    lineHeight: 1.45,
-    outline: "none",
-    resize: "vertical",
-    marginBottom: 12,
+  brandName: {
+    fontWeight: 800,
+    color: "#3b1f27",
   },
-  savedNote: {
-    background: "#fff2f5",
-    border: "1px solid #efc9d3",
-    color: "#8b3a52",
-    borderRadius: 14,
-    padding: "12px 16px",
-    marginBottom: 16,
+  statusSelect: {
+    border: "1px solid #edcbd5",
+    borderRadius: 12,
+    padding: 10,
+    color: "#963a5a",
+    background: "#fff7f9",
+    fontWeight: 700,
   },
-  helpText: {
-    color: "#777",
-    fontSize: 15,
-    marginTop: -4,
+  deleteButton: {
+    border: "none",
+    borderRadius: 12,
+    background: "#f8e2e8",
+    color: "#963a5a",
+    fontSize: 22,
+    cursor: "pointer",
+  },
+  progressWrap: {
+    marginTop: 18,
+    fontFamily: "Arial, sans-serif",
+  },
+  progressTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    color: "#342126",
+    fontWeight: 800,
+    marginBottom: 8,
+  },
+  progressTrack: {
+    height: 14,
+    borderRadius: 999,
+    background: "#f2d8e0",
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    background: "linear-gradient(90deg, #b56882, #efb4c6)",
+    borderRadius: 999,
+  },
+  cardTitle: {
+    margin: 0,
+    color: "#963a5a",
+    fontSize: 28,
+  },
+  planGrid: {
+    display: "grid",
+    gap: 12,
+  },
+  planItem: {
+    background: "#fff7f9",
+    border: "1px solid #edcbd5",
+    borderRadius: 18,
+    padding: 18,
+    fontFamily: "Arial, sans-serif",
+    fontWeight: 700,
+    color: "#3b1f27",
+  },
+  day: {
+    display: "inline-block",
+    marginBottom: 8,
+    color: "#963a5a",
+    fontWeight: 900,
   },
 };
