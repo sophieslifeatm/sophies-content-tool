@@ -2,15 +2,18 @@ import { useMemo, useState } from "react";
 
 const DEFAULT_DATA = {
   handle: "@sophieslifeatm",
-  followers: 7878,
+  followers: 7905,
   followerGoal: 10000,
-  likesTotal: "523.8K",
-  views7d: "1.1M",
+  likesTotal: "525.5K",
+  views7d: "1.09M",
   views28d: "1.3M",
-  views60d: "1.7M",
-  profileViews7d: "13K",
+  views60d: "1.7M+",
+  profileViews7d: "13,065",
   profileViews28d: "21K",
   profileViews60d: "32K",
+  likes7d: "194,864",
+  comments7d: "941",
+  shares7d: "16,052",
   likes60d: "234K",
   comments60d: "4,685",
   shares60d: "17K",
@@ -20,12 +23,18 @@ const DEFAULT_DATA = {
   maleAudience: "23%",
   otherAudience: "2%",
   bestPostTimes: "4 PM, 6 PM, 9 PM",
-  shopmyEarned2026: "$1,516",
-  shopmyLifetime: "$1.7K",
-  shopmyToday: "$121",
+  shopmyEarned2026: "$1,681",
+  shopmyLifetime: "$1,681",
+  shopmyPending: "$1,148",
+  shopmyUpcoming: "$250",
+  shopmyPaid: "$284",
   shopmyClicksToday: 362,
   trustedShoppers: 404,
   shopmyTier: "Icon 89",
+  juneShopMyGoal: "$1,000",
+  juneGiftingGoal: 25,
+  junePaidCollabGoal: 4,
+  junePaidCollabRevenueGoal: "$1,000+",
   activeInsight: "Fashion gets views + ShopMy revenue. Creator/PR tips convert followers. Lifestyle builds trust.",
 };
 
@@ -35,11 +44,14 @@ const INITIAL_BRANDS = [
 ].map(([name, status]) => ({ name, status }));
 
 const WINNERS = [
-  { title: "Target Matching Set Haul", views: "1.1M", newViewers: "727K", followers: 601, why: "Views + followers + ShopMy sales. Make sequels immediately." },
-  { title: "Massive PR Haul / Microinfluencer Tips", views: "18K+", newViewers: "Creator audience", followers: 473, why: "Lower views, extremely high follower conversion." },
-  { title: "Today’s PR Haul", views: "24K", newViewers: "13K", followers: 454, why: "Proves PR content converts followers." },
-  { title: "Amazon Spring Top Haul", views: "121.5K", newViewers: "78K", followers: "High reach", why: "Affordable fashion + haul format works." },
-  { title: "Morning of self-care", views: "502.7K", newViewers: "Lifestyle reach", followers: "Awareness", why: "Lifestyle can hit, but use it between fashion/creator videos." },
+  { title: "Target Matching Set Haul", views: "1.06M", newViewers: "727K", followers: 601, why: "Highest reach, huge shares, and strongest ShopMy conversion. Make Target sequels immediately." },
+  { title: "Morning of Self-Care", views: "502.7K", newViewers: "Lifestyle reach", followers: "Awareness", why: "Self-care/lifestyle can go very wide. Use it as trust-building between fashion and creator-tip videos." },
+  { title: "Haircut / Brunette Bob Video", views: "426.6K", newViewers: "Beauty transformation", followers: "Awareness", why: "Transformation/aesthetic decision content has viral potential outside your core followers." },
+  { title: "Princess Polly Spring Finds", views: "152.3K", newViewers: "81K", followers: "Brand proof", why: "Fashion partner content works when styled as an organic try-on haul." },
+  { title: "Amazon / SUUKSESS Spring Top Haul", views: "121.9K", newViewers: "78K", followers: "Fashion reach", why: "Affordable Amazon fashion and Skims-dupe framing is a repeatable winner." },
+  { title: "PR Haul Tips", views: "24.2K", newViewers: "13K", followers: 454, why: "Lower views than fashion, but converts followers extremely well." },
+  { title: "Microinfluencer PR Haul", views: "18.4K", newViewers: "Creator audience", followers: 473, why: "Creator-tip content is your best follower-conversion engine." },
+  { title: "Morning Room Reset", views: "11.3K", newViewers: "Community", followers: "Trust", why: "Strong relationship-building content. Keep it between growth/revenue posts." },
 ];
 
 const SHOPMY_WINNERS = [
@@ -69,6 +81,8 @@ const STATUS = {
   gifting: { label: "🎁 Gifting", bg: "#d1fae5", text: "#065f46" },
   pr_list: { label: "📋 PR List", bg: "#dbeafe", text: "#1d4ed8" },
   not_now: { label: "⏸️ Not Now", bg: "#f3f4f6", text: "#6b7280" },
+  paid: { label: "💸 Paid", bg: "#ede9fe", text: "#5b21b6" },
+  follow_up: { label: "⏳ Follow Up", bg: "#ffedd5", text: "#9a3412" },
   sent: { label: "✉️ Sent", bg: "#fef3c7", text: "#92400e" },
 };
 
@@ -97,7 +111,7 @@ function makeIdeas(prompt) {
   const isPR = p.includes("pr") || p.includes("micro") || p.includes("brand") || p.includes("gifting");
   const isShop = p.includes("shopmy") || p.includes("link") || p.includes("affiliate");
   const base = isTarget ? [
-    ["Target Finds of the Week 🎯", "Film a quick try-on with 3-5 Wild Fable/new arrival pieces and keep the video tight.", "Put Target collection first on ShopMy.", "This matches the 1.1M view format and your top-earning products."],
+    ["Target Finds of the Week 🎯", "Film a quick try-on with 3-5 Wild Fable/new arrival pieces and keep the video tight.", "Put Target collection first on ShopMy.", "This matches the 1.09M view format and your top-earning products."],
     ["I found the cutest Target set under $40", "Open with the set in hand, then try it on immediately.", "Link the full outfit + similar colors.", "Affordable matching sets already proved they convert."],
   ] : isPR ? [
     ["How I got PR with under 10K followers", "Explain one real tip, then show proof through packages or messages.", "No hard sell, use it to gain followers.", "PR/tip videos are your best follower-converters."],
@@ -181,6 +195,12 @@ export default function SophieContentStudioLive() {
             [needed.toLocaleString(), "Followers to 10K", "#fce7f3", "#9d174d"], [daysAtRecentRate, "Days at current pace", "#e0e7ff", "#3730a3"], [stats.profileViews60d, "Profile views 60d", "#d1fae5", "#065f46"], [stats.shares60d, "Shares 60d", "#fef3c7", "#92400e"]
           ].map(([v, l, bg, color]) => <div key={l} style={{ background: bg, color, borderRadius: 16, padding: 16 }}><div style={{ fontSize: 26, fontWeight: 800 }}>{v}</div><div style={{ fontSize: 12, textTransform: "uppercase", fontWeight: 700 }}>{l}</div></div>)}
         </div>
+        <Card title="June goals">
+          <p><b>Follower goal:</b> 10K followers, {needed.toLocaleString()} left.</p>
+          <p><b>ShopMy goal:</b> {stats.juneShopMyGoal} earnings in June.</p>
+          <p><b>Gifting goal:</b> {stats.juneGiftingGoal} gifting partners, {(stats.juneGiftingGoal - (counts.gifting || 0)).toLocaleString()} more needed.</p>
+          <p><b>Paid collab goal:</b> {stats.junePaidCollabGoal} paid collabs totaling {stats.junePaidCollabRevenueGoal}.</p>
+        </Card>
         <Card title="Your current strategy">
           <p><b>Post mix:</b> 40% affordable fashion, 30% creator/PR tips, 20% lifestyle, 10% beauty.</p>
           <p><b>Best posting windows:</b> {stats.bestPostTimes}. Test 5:30 PM and 8:30 PM.</p>
@@ -199,11 +219,11 @@ export default function SophieContentStudioLive() {
 
       {tab === 5 && <section>
         <h2 style={{ fontWeight: 400 }}>Brand Outreach Tracker 📊</h2>
-        <p style={{ color: "#777" }}>{brands.length} brands contacted · {counts.gifting || 0} gifting · {counts.pr_list || 0} PR list · {counts.not_now || 0} not now</p>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>{["all", "gifting", "pr_list", "sent", "not_now"].map(f => <button key={f} onClick={() => setFilter(f)} style={{ ...pill, background: filter === f ? "#8b3a52" : "white", color: filter === f ? "white" : "#8b3a52" }}>{f === "all" ? "All" : STATUS[f].label}</button>)}</div>
+        <p style={{ color: "#777" }}>{brands.length} brands contacted · {counts.gifting || 0}/{stats.juneGiftingGoal} gifting · {counts.paid || 0}/{stats.junePaidCollabGoal} paid · {counts.pr_list || 0} PR list</p>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>{["all", "gifting", "pr_list", "paid", "follow_up", "sent", "not_now"].map(f => <button key={f} onClick={() => setFilter(f)} style={{ ...pill, background: filter === f ? "#8b3a52" : "white", color: filter === f ? "white" : "#8b3a52" }}>{f === "all" ? "All" : STATUS[f].label}</button>)}</div>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search brands" style={inputStyle}/>
         <div style={{ display: "flex", gap: 8, margin: "10px 0" }}><input value={newBrand} onChange={e => setNewBrand(e.target.value)} placeholder="Add new brand" style={inputStyle}/><button onClick={addBrand} style={{ ...pill, background: "#8b3a52", color: "white" }}>Add</button></div>
-        {filteredBrands.map(b => <div key={b.name} style={{ background: "white", border: "1px solid #f4dfe6", borderRadius: 14, padding: 12, display: "flex", gap: 8, alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}><b>{b.name}</b><select value={b.status} onChange={e => changeBrandStatus(b.name, e.target.value)} style={{ ...pill, background: STATUS[b.status].bg, color: STATUS[b.status].text }}><option value="sent">Sent</option><option value="gifting">Gifting</option><option value="pr_list">PR List</option><option value="not_now">Not Now</option></select></div>)}
+        {filteredBrands.map(b => <div key={b.name} style={{ background: "white", border: "1px solid #f4dfe6", borderRadius: 14, padding: 12, display: "flex", gap: 8, alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}><b>{b.name}</b><select value={b.status} onChange={e => changeBrandStatus(b.name, e.target.value)} style={{ ...pill, background: STATUS[b.status].bg, color: STATUS[b.status].text }}><option value="sent">Sent</option><option value="gifting">Gifting</option><option value="pr_list">PR List</option><option value="not_now">Not Now</option><option value="paid">Paid</option><option value="follow_up">Follow Up</option></select></div>)}
       </section>}
 
       {tab === 6 && <section>
